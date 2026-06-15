@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
                 $user->roles()->attach($role->id);
             }
 
-            // Create customer record for pelanggan user
+            // Buat record customer untuk pelanggan
             if ($roleName === 'pelanggan') {
                 Customer::firstOrCreate(
                     ['user_id' => $user->id],
