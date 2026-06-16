@@ -1,0 +1,48 @@
+@extends('layouts.app')
+@section('title', 'Detail Order Saya')
+
+@section('content')
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex items-center gap-4">
+        <a href="{{ route('booking.index') }}" class="text-gray-400 hover:text-gray-200">← Kembali</a>
+        <h1 class="text-2xl font-bold text-gray-100">Detail Order: {{ $order->order_number }}</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-white mb-4">Informasi Booking</h2>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">Tanggal Servis:</span> <span class="text-gray-200">{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y') }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Status:</span> 
+                    <span class="font-bold text-orange-400">{{ strtoupper(str_replace('_', ' ', $order->status)) }}</span>
+                </div>
+                <div class="flex justify-between"><span class="text-gray-500">Kendaraan:</span> <span class="text-gray-200">{{ $order->vehicle->license_plate }} ({{ $order->vehicle->brand }})</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Kilometer:</span> <span class="text-gray-200">{{ number_format($order->current_km, 0, ',', '.') }} KM</span></div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-700">
+                <span class="text-gray-500 text-sm block mb-1">Keluhan:</span>
+                <p class="text-gray-300 text-sm bg-gray-900/50 p-3 rounded-lg">{{ $order->complaint }}</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-white mb-4">Progres Servis</h2>
+            <div class="space-y-4">
+                <div>
+                    <span class="text-gray-500 text-sm block">Service Advisor:</span>
+                    <span class="text-gray-200">{{ $order->serviceAdvisor->name ?? 'Belum Ditugaskan' }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-sm block">Mekanik yang Menangani:</span>
+                    <span class="text-gray-200">{{ $order->mechanic->name ?? 'Belum Ditugaskan' }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-sm block">Estimasi Biaya Jasa:</span>
+                    <span class="text-xl font-bold text-green-400">Rp {{ number_format($order->estimated_cost, 0, ',', '.') }}</span>
+                    <p class="text-xs text-gray-500 mt-1">*Hanya estimasi biaya layanan, belum termasuk sparepart</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

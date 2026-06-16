@@ -18,6 +18,12 @@ class ServiceController extends Controller
         return view('services.index', compact('services', 'categories'));
     }
 
+    public function create()
+    {
+        Gate::authorize('manage-services');
+        return view('services.create');
+    }
+
     public function store(Request $request)
     {
         Gate::authorize('manage-services');
@@ -34,7 +40,13 @@ class ServiceController extends Controller
         $service = Service::create($data);
         AuditLogService::log('Tambah layanan', 'services', $service->id);
 
-        return back()->with('success', 'Layanan berhasil ditambah.');
+        return redirect()->route('services.index')->with('success', 'Layanan berhasil ditambah.');
+    }
+
+    public function edit(Service $service)
+    {
+        Gate::authorize('manage-services');
+        return view('services.edit', compact('service'));
     }
 
     public function update(Request $request, Service $service)
@@ -52,6 +64,6 @@ class ServiceController extends Controller
         }
 
         $service->update($data);
-        return back()->with('success', 'Layanan berhasil diubah.');
+        return redirect()->route('services.index')->with('success', 'Layanan berhasil diubah.');
     }
 }

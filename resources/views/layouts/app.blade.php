@@ -26,9 +26,18 @@
                         </span>
                     </a>
                     @auth
-                    <div class="hidden md:flex items-center gap-1">
+                    <div class="hidden md:flex flex-wrap items-center gap-1">
                         <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Dashboard</a>
                         
+                        {{-- Menu Pelanggan --}}
+                        @can('create-booking')
+                        <a href="{{ route('booking.create') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('booking.create') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Booking Servis</a>
+                        <a href="{{ route('booking.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('booking.index') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Riwayat Saya</a>
+                        @endcan
+                        {{-- Menu Admin & SA --}}
+                        @can('manage-orders')
+                        <a href="{{ route('service-orders.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('service-orders.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Antrean & Order</a>
+                        @endcan
                         @can('manage-customers')
                         <a href="{{ route('customers.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('customers.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Pelanggan</a>
                         @endcan
@@ -38,15 +47,11 @@
                         @endcan
                         
                         @can('manage-services')
-                        <a href="{{ route('services.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('services.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Layanan Servis</a>
-                        @endcan
-                        
-                        @can('manage-spareparts')
+                        <a href="{{ route('services.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('services.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Layanan</a>
                         <a href="{{ route('spareparts.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('spareparts.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Sparepart</a>
                         @endcan
                     </div>
                     @endauth
-                </div>
 
                 {{-- User Menu --}}
                 @auth

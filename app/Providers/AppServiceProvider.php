@@ -44,5 +44,25 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('handle-mechanic-job', fn($user, $job) => $user->hasRole('mekanik') && $job->mechanic_id === $user->id);
         Gate::define('process-payment', fn($user) => $user->hasRole('kasir'));
         Gate::define('view-reports', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
+
+        Gate::define('create-booking', fn($user) => $user->hasRole('pelanggan'));
+        
+        Gate::define('manage-orders', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
+        
+        Gate::define('view-order', function ($user, $order) {
+            if ($user->hasRole('admin') || $user->hasRole('service_advisor') || $user->hasRole('kasir')) return true;
+            if ($user->hasRole('mekanik')) return $order->mechanic_id === $user->id;
+            return $user->hasRole('pelanggan') && $order->customer->user_id === $user->id;
+        });
+        
+        Gate::define('cancel-order', function ($user, $order) {
+            if (!in_array($order->status, ['terdaftar', 'menunggu'])) return false;
+            if ($user->hasRole('admin') || $user->hasRole('service_advisor')) return true;
+            return $user->hasRole('pelanggan') && $order->customer->user_id === $user->id;
+        });
+        
+        Gate::define('assign-mechanic', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
+        
+        Gate::define('view-mechanic-jobs', fn($user) => $user->hasRole('mekanik') || $user->hasRole('admin') || $user->hasRole('service_advisor'));
     }
 }

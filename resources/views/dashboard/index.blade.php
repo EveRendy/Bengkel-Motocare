@@ -28,6 +28,43 @@
             <p class="text-3xl font-bold text-gray-100">{{ $totalOrdersToday }}</p>
             <p class="text-sm text-gray-500 mt-1">Total Order Hari Ini</p>
         </div>
+        <div class="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden mt-8">
+            <div class="p-6 border-b border-gray-700/50">
+                <h3 class="text-lg font-semibold text-gray-200">5 Order Terbaru</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-gray-700/30 text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3">No Order</th>
+                            <th class="px-6 py-3">Pelanggan</th>
+                            <th class="px-6 py-3">Kendaraan</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/30">
+                        @forelse($recentOrders as $order)
+                        <tr class="hover:bg-gray-700/20">
+                            <td class="px-6 py-4 font-medium text-orange-400">{{ $order->order_number }}</td>
+                            <td class="px-6 py-4">{{ $order->customer->name ?? '-' }}</td>
+                            <td class="px-6 py-4">{{ $order->vehicle->license_plate ?? '-' }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full border border-gray-600 bg-gray-800 text-gray-300">
+                                    {{ strtoupper(str_replace('_', ' ', $order->status)) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">{{ $order->created_at->diffForHumans() }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada order.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         {{-- Menunggu --}}
         <div class="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-yellow-500/30 transition-all duration-300 group">

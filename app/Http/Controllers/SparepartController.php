@@ -16,6 +16,12 @@ class SparepartController extends Controller
         return view('spareparts.index', compact('spareparts'));
     }
 
+    public function create()
+    {
+        Gate::authorize('manage-spareparts');
+        return view('spareparts.create');
+    }
+
     public function store(Request $request)
     {
         Gate::authorize('manage-spareparts');
@@ -31,7 +37,30 @@ class SparepartController extends Controller
         $sp = Sparepart::create($data);
         AuditLogService::log('Tambah sparepart', 'spareparts', $sp->id);
 
-        return back()->with('success', 'Sparepart berhasil ditambah.');
+        return redirect()->route('spareparts.index')->with('success', 'Sparepart berhasil ditambah.');
+    }
+
+    public function edit(Sparepart $sparepart)
+    {
+        Gate::authorize('manage-spareparts');
+        return view('spareparts.edit', compact('sparepart'));
+    }
+
+    public function update(Request $request, Sparepart $sparepart)
+    {
+        Gate::authorize('manage-spareparts');
+        $data = $request->validate([
+            'name' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'stock_status' => 'required|in:tersedia,habis,nonaktif'
+        ]);
+
+        if ($sparepart->price != $data['price']) {
+            AuditLogService::log('Ubah harga sparepart', 'spareparts', $sparepart->id);
+        }
+
+        $sparepart->update($data);
+        return redirect()->route('spareparts.index')->with('success', 'Sparepart berhasil diubah.');
     }
 
     public function updateStatus(Request $request, Sparepart $sparepart)
