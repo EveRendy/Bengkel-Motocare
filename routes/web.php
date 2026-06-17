@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
         Route::get('mechanic-jobs/{job}/edit', [\App\Http\Controllers\MechanicJobController::class, 'edit'])->name('mechanic-jobs.edit');
         Route::put('mechanic-jobs/{job}', [\App\Http\Controllers\MechanicJobController::class, 'update'])->name('mechanic-jobs.update');
         Route::patch('mechanic-jobs/{job}/complete', [\App\Http\Controllers\MechanicJobController::class, 'complete'])->name('mechanic-jobs.complete');
+        Route::patch('mechanic-jobs/{job}/start', [\App\Http\Controllers\MechanicJobController::class, 'startJob'])->name('mechanic-jobs.start');
         
         Route::post('mechanic-jobs/{job}/spareparts', [\App\Http\Controllers\MechanicJobController::class, 'storeSparepart'])->name('mechanic-jobs.spareparts.store');
         Route::delete('mechanic-jobs/{job}/spareparts/{sparepart}', [\App\Http\Controllers\MechanicJobController::class, 'removeSparepart'])->name('mechanic-jobs.spareparts.remove');
@@ -87,23 +88,6 @@ Route::middleware('auth')->group(function () {
         Route::get('bookings/{order}/process', [\App\Http\Controllers\ServiceOrderController::class, 'processBookingForm'])->name('bookings.process.form');
         Route::put('bookings/{order}/process', [\App\Http\Controllers\ServiceOrderController::class, 'processBooking'])->name('bookings.process');
     });
-
-        // MEKANIK ONLY (Input hasil & input sparepart)
-    Route::middleware(['role:mekanik'])->group(function () {
-        // ... (route lain biarkan)
-
-        // BARU: Mekanik klik mulai pengerjaan
-    Route::patch('mechanic-jobs/{job}/start', [\App\Http\Controllers\MechanicJobController::class, 'startJob'])->name('mechanic-jobs.start');
-        
-        // ...
-    });
-});
-    // Mechanic Jobs
-    Route::get('mechanic-jobs', [MechanicJobController::class, 'index'])->name('mechanic-jobs.index');
-    Route::get('mechanic-jobs/{order}', [MechanicJobController::class, 'show'])->name('mechanic-jobs.show');
-    Route::patch('mechanic-jobs/{order}/start', [MechanicJobController::class, 'start'])->name('mechanic-jobs.start');
-    Route::patch('mechanic-jobs/{order}', [MechanicJobController::class, 'update'])->name('mechanic-jobs.update');
-    Route::patch('mechanic-jobs/{order}/finish', [MechanicJobController::class, 'finish'])->name('mechanic-jobs.finish');
 
     // Payments & Invoices
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
