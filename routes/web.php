@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MechanicJobController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServiceOrderController;
@@ -52,4 +54,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('service-orders/{order}/assign', [ServiceOrderController::class, 'assignMechanic'])->name('service-orders.assign');
     Route::patch('service-orders/{order}/start', [ServiceOrderController::class, 'startService'])->name('service-orders.start');
     Route::patch('service-orders/{order}/cancel', [ServiceOrderController::class, 'cancel'])->name('service-orders.cancel');
+
+    // Mechanic Jobs
+    Route::get('mechanic-jobs', [MechanicJobController::class, 'index'])->name('mechanic-jobs.index');
+    Route::get('mechanic-jobs/{order}', [MechanicJobController::class, 'show'])->name('mechanic-jobs.show');
+    Route::patch('mechanic-jobs/{order}/start', [MechanicJobController::class, 'start'])->name('mechanic-jobs.start');
+    Route::patch('mechanic-jobs/{order}', [MechanicJobController::class, 'update'])->name('mechanic-jobs.update');
+    Route::patch('mechanic-jobs/{order}/finish', [MechanicJobController::class, 'finish'])->name('mechanic-jobs.finish');
+
+    // Payments & Invoices
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments/{order}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::post('payments/{order}', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('invoices/{payment}', [PaymentController::class, 'invoice'])->name('invoices.show');
 });

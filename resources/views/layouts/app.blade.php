@@ -38,6 +38,12 @@
                         @can('manage-orders')
                         <a href="{{ route('service-orders.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('service-orders.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Antrean & Order</a>
                         @endcan
+                        @can('view-mechanic-jobs')
+                        <a href="{{ route('mechanic-jobs.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('mechanic-jobs.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Pekerjaan Mekanik</a>
+                        @endcan
+                        @can('process-payment')
+                        <a href="{{ route('payments.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('payments.*') || request()->routeIs('invoices.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Pembayaran</a>
+                        @endcan
                         @can('manage-customers')
                         <a href="{{ route('customers.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('customers.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Pelanggan</a>
                         @endcan
