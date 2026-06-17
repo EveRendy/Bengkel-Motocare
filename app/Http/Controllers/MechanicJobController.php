@@ -7,6 +7,9 @@ use App\Models\Sparepart;
 use App\Models\User;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreMechanicJobRequest;
+use App\Models\ServiceOrder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class MechanicJobController extends Controller
