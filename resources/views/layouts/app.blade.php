@@ -29,12 +29,18 @@
                     <div class="hidden md:flex flex-wrap items-center gap-1">
                         <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Dashboard</a>
                         
-                        {{-- Menu Pelanggan --}}
-                        @can('create-booking')
+                        {{-- Menu Khusus Pelanggan --}}
+                        @can('manage-own-vehicles')
+                        <a href="{{ route('my-vehicles.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('my-vehicles.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Kendaraan Saya</a>
                         <a href="{{ route('booking.create') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('booking.create') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Booking Servis</a>
-                        <a href="{{ route('booking.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('booking.index') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Riwayat Saya</a>
+                        <a href="{{ route('booking.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('booking.index') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Riwayat Servis</a>
                         @endcan
-                        {{-- Menu Admin & SA --}}
+                        {{-- Menu Admin & SA (Jangan tampilkan ke pelanggan) --}}
+                        @can('view-bookings')
+                        <a href="{{ route('bookings.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bookings.*') ? 'bg-blue-600/30 text-blue-300' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">
+                            Booking Pelanggan
+                        </a>
+                        @endcan
                         @can('manage-orders')
                         <a href="{{ route('service-orders.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('service-orders.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Antrean & Order</a>
                         @endcan
@@ -43,12 +49,18 @@
                         @endcan
                         
                         @can('manage-vehicles')
-                        <a href="{{ route('vehicles.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('vehicles.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Kendaraan</a>
+                        <a href="{{ route('vehicles.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('vehicles.index', 'vehicles.create', 'vehicles.edit', 'vehicles.show') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Kendaraan (Admin)</a>
                         @endcan
                         
                         @can('manage-services')
                         <a href="{{ route('services.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('services.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Layanan</a>
                         <a href="{{ route('spareparts.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('spareparts.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">Sparepart</a>
+                        @endcan
+
+                        @can('view-mechanic-jobs')
+                        <a href="{{ route('mechanic-jobs.index') }}" class="px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('mechanic-jobs.*') ? 'bg-gray-700/50 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30' }}">
+                            {{ auth()->user()->hasRole('mekanik') ? 'Pekerjaan Saya' : 'Monitoring Mekanik' }}
+                        </a>
                         @endcan
                     </div>
                     @endauth

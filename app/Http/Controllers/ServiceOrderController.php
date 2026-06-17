@@ -151,10 +151,14 @@ class ServiceOrderController extends Controller
         }
     }
 
-    public function assignMechanic(Request $request, ServiceOrder $order)
+    public function assignMechanic(Request $request, \App\Models\ServiceOrder $order)
     {
         Gate::authorize('assign-mechanic');
         $request->validate(['mechanic_id' => 'required|exists:users,id']);
+
+        if (!in_array($order->status, ['terdaftar', 'menunggu'])) {
+            return back()->with('error', 'Hanya order berstatus Terdaftar atau Menunggu yang bisa di-assign mekanik.');
+        }
 
         try {
             $updateData = ['mechanic_id' => $request->mechanic_id];
@@ -163,28 +167,58 @@ class ServiceOrderController extends Controller
             }
 
             $order->update($updateData);
-            AuditLogService::log('Penugasan mekanik', 'service_orders', $order->id);
 
-            return back()->with('success', 'Mekanik berhasil ditugaskan.');
+            // AUTO-CREATE atau UPDATE MechanicJob
+            $job = \App\Models\MechanicJob::where('service_order_id', $order->id)->first();
+            if (!$job) {
+                \App\Models\MechanicJob::create([
+                    'service_order_id' => $order->id,
+                    'mechanic_id' => $request->mechanic_id,
+                    'started_at' => null,
+                    'finished_at' => null,
+                ]);
+            } else {
+                // Jika ganti mekanik
+                $job->update(['mechanic_id' => $request->mechanic_id]);
+            }
+
+            \App\Services\AuditLogService::log('Penugasan mekanik', 'service_orders', $order->id);
+
+            return back()->with('success', 'Mekanik berhasil ditugaskan. Menunggu mekanik memulai pengerjaan.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menugaskan mekanik.');
+            return back()->with('error', 'Gagal menugaskan mekanik: ' . $e->getMessage());
         }
     }
 
-    public function startService(ServiceOrder $order)
+    public function startService(\App\Models\ServiceOrder $order)
     {
-        Gate::authorize('manage-orders'); // SA bisa force start
+        Gate::authorize('manage-orders');
 
         if ($order->status !== 'menunggu') {
             return back()->with('error', 'Status order harus Menunggu sebelum dikerjakan.');
         }
+        
+        if (!$order->mechanic_id) {
+            return back()->with('error', 'Order belum ditugaskan ke mekanik.');
+        }
 
         try {
             $order->update(['status' => 'dikerjakan']);
-            AuditLogService::log('Mulai pengerjaan (SA)', 'service_orders', $order->id);
-            return back()->with('success', 'Status diubah menjadi Dikerjakan.');
+            
+            // MechanicJob seharusnya sudah ada dari saat assign, tapi jaga-jaga kita firstOrCreate
+            $mechanicJob = \App\Models\MechanicJob::firstOrCreate(
+                ['service_order_id' => $order->id],
+                ['mechanic_id' => $order->mechanic_id, 'started_at' => now()]
+            );
+
+            if (!$mechanicJob->started_at) {
+                $mechanicJob->update(['started_at' => now()]);
+            }
+
+            \App\Services\AuditLogService::log('Force start pengerjaan (Oleh SA)', 'service_orders', $order->id);
+            return back()->with('success', 'Status diubah menjadi Dikerjakan (Emergency Force Start). Normalnya mekanik yang harus klik mulai.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal update status.');
+            return back()->with('error', 'Gagal memulai pengerjaan: ' . $e->getMessage());
         }
     }
 
@@ -201,5 +235,87 @@ class ServiceOrderController extends Controller
 
         $lastNumber = intval(substr($lastOrder->order_number, -4));
         return $datePrefix . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function bookings()
+    {
+        Gate::authorize('view-bookings');
+
+        // Menampilkan booking yang belum diproses (service_advisor_id null)
+        $bookings = \App\Models\ServiceOrder::with(['customer', 'vehicle'])
+            ->whereNull('service_advisor_id')
+            ->where('status', 'terdaftar')
+            ->latest()
+            ->paginate(10);
+
+        return view('service-orders.bookings', compact('bookings'));
+    }
+
+    public function processBookingForm(\App\Models\ServiceOrder $order)
+    {
+        Gate::authorize('process-booking');
+
+        // Pastikan belum diproses
+        if ($order->service_advisor_id !== null) {
+            return redirect()->route('bookings.index')->with('error', 'Booking ini sudah diproses.');
+        }
+
+        $order->load(['customer', 'vehicle']);
+        $services = \App\Models\Service::where('status', 'aktif')->with('category')->get();
+        $mechanics = \App\Models\User::whereHas('roles', fn($q) => $q->where('name', 'mekanik'))
+            ->where('status', 'aktif')
+            ->get();
+
+        return view('service-orders.process', compact('order', 'services', 'mechanics'));
+    }
+
+    public function processBooking(\App\Http\Requests\ProcessBookingRequest $request, \App\Models\ServiceOrder $order)
+    {
+        Gate::authorize('process-booking');
+
+        if ($order->service_advisor_id !== null) {
+            return redirect()->route('bookings.index')->with('error', 'Booking ini sudah diproses.');
+        }
+
+        try {
+            $data = $request->validated();
+            
+            // Hitung estimasi biaya
+            $selectedServices = \App\Models\Service::whereIn('id', $data['services'])->get();
+            $estimatedCost = $selectedServices->sum('price');
+            
+            // Tentukan status lanjutan
+            $status = 'terdaftar';
+            if (!empty($data['mechanic_id'])) {
+                $status = 'menunggu';
+            }
+
+            // Update order
+            $order->update([
+                'service_advisor_id' => auth()->id(),
+                'mechanic_id' => $data['mechanic_id'] ?? null,
+                'complaint' => $data['complaint'],
+                'current_km' => $data['current_km'],
+                'notes' => $data['notes'] ?? null,
+                'estimated_cost' => $estimatedCost,
+                'status' => $status,
+                // Jika booking dari user belum punya order_number, buatkan. Jika sudah, pakai yang lama.
+                'order_number' => $order->order_number ?? $this->generateOrderNumber(),
+            ]);
+
+            // Simpan layanan ke pivot table dengan harga saat ini (price_at_time)
+            $pivotData = [];
+            foreach ($selectedServices as $srv) {
+                $pivotData[$srv->id] = ['price_at_time' => $srv->price];
+            }
+            // Karena ini booking baru, kita pakai sync untuk memastikan bersih
+            $order->services()->sync($pivotData);
+
+            \App\Services\AuditLogService::log('Proses booking menjadi order', 'service_orders', $order->id);
+
+            return redirect()->route('service-orders.show', $order)->with('success', 'Booking berhasil diproses menjadi Order Servis.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Gagal memproses booking: ' . $e->getMessage());
+        }
     }
 }

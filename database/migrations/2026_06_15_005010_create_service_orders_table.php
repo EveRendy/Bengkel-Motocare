@@ -14,7 +14,7 @@ return new class extends Migration
             $table->dateTime('order_date')->useCurrent();
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
-            $table->foreignId('service_advisor_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('service_advisor_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('mechanic_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->text('complaint');
             $table->integer('current_km')->default(0);
