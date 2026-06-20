@@ -2,19 +2,26 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MechanicJobController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServiceOrderController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SparepartController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () { return redirect()->route('dashboard'); });
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : view('welcome');
+});
 
 // Guest
 Route::middleware('guest')->group(function () {
@@ -43,10 +50,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('vehicles', VehicleController::class)->except(['destroy']);
     Route::patch('vehicles/{vehicle}/deactivate', [VehicleController::class, 'deactivate'])->name('vehicles.deactivate');
 
-    Route::resource('services', ServiceController::class)->except(['destroy']);
-    Route::resource('service-categories', ServiceCategoryController::class)->except(['destroy']);
+    Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
+    Route::post('service-categories', [ServiceCategoryController::class, 'store'])->name('service-categories.store');
     
-    Route::resource('spareparts', SparepartController::class)->except(['destroy']);
+    Route::resource('spareparts', SparepartController::class)->except(['show', 'destroy']);
     Route::patch('spareparts/{sparepart}/status', [SparepartController::class, 'updateStatus'])->name('spareparts.status');
 
     // Service Orders (Admin & SA)
@@ -93,5 +100,15 @@ Route::middleware('auth')->group(function () {
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('payments/{order}', [PaymentController::class, 'show'])->name('payments.show');
     Route::post('payments/{order}', [PaymentController::class, 'store'])->name('payments.store');
+    Route::patch('payments/{payment}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
     Route::get('invoices/{payment}', [PaymentController::class, 'invoice'])->name('invoices.show');
+    Route::get('invoices/{payment}/pdf', [PaymentController::class, 'invoicePdf'])->name('invoices.pdf');
+
+    // Monitoring & Reports (Admin & Manager)
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+    Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
+    Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+    Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 });

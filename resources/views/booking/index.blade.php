@@ -20,6 +20,7 @@
                         <th class="px-4 py-3">Kendaraan</th>
                         <th class="px-4 py-3">Keluhan</th>
                         <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Pembayaran</th>
                         <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -47,15 +48,29 @@
                                 {{ $statusText }}
                             </span>
                         </td>
+                        <td class="px-4 py-3">
+                            @if($order->payment)
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-500/10 text-green-400">
+                                    LUNAS
+                                </span>
+                            @else
+                                <span class="px-2 py-1 text-xs rounded-full bg-gray-500/10 text-gray-400">
+                                    BELUM BAYAR
+                                </span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3 text-right flex justify-end gap-2">
                             <a href="{{ route('booking.show', $order) }}" class="text-blue-400 hover:text-blue-300">Detail</a>
+                            @if($order->payment)
+                            <a href="{{ route('invoices.show', $order->payment) }}" class="text-green-400 hover:text-green-300">Invoice</a>
+                            @endif
                             @if(in_array($order->status, ['terdaftar', 'menunggu']))
                             <button onclick="openCancelModal('{{ route('booking.cancel', $order) }}')" class="text-red-400 hover:text-red-300 ml-2">Batalkan</button>
                             @endif
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Anda belum pernah melakukan booking servis.</td></tr>
+                    <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Anda belum pernah melakukan booking servis.</td></tr>
                     @endforelse
                 </tbody>
             </table>

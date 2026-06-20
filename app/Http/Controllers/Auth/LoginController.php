@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,6 +36,8 @@ class LoginController extends Controller
                     ])->onlyInput('email');
                 }
 
+                AuditLogService::log('Login ke sistem', 'auth', Auth::id());
+
                 return redirect()->intended('/dashboard');
             }
 
@@ -50,6 +53,8 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        AuditLogService::log('Logout dari sistem', 'auth', Auth::id());
+
         Auth::logout();
 
         $request->session()->invalidate();

@@ -43,7 +43,10 @@ class AppServiceProvider extends ServiceProvider
         // Mechanics & Cashiers
         Gate::define('handle-mechanic-job', fn($user, $job) => $user->hasRole('mekanik') && $job->mechanic_id === $user->id);
         Gate::define('process-payment', fn($user) => $user->hasRole('kasir'));
+        Gate::define('cancel-payment', fn($user) => $user->hasRole('admin') || $user->hasRole('manager'));
         Gate::define('view-reports', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
+        Gate::define('view-audit-logs', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
+        Gate::define('manage-settings', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
 
         Gate::define('create-booking', fn($user) => $user->hasRole('pelanggan'));
         
@@ -63,8 +66,6 @@ class AppServiceProvider extends ServiceProvider
         
         Gate::define('assign-mechanic', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
         
-        Gate::define('view-mechanic-jobs', fn($user) => $user->hasRole('mekanik') || $user->hasRole('admin') || $user->hasRole('service_advisor'));
-
         // Manajemen Kendaraan Milik Sendiri (Pelanggan)
         Gate::define('manage-own-vehicles', function ($user) {
             return $user->hasRole('pelanggan');

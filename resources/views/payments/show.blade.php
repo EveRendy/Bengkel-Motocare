@@ -20,9 +20,14 @@
         </div>
 
         @if($order->payment)
-            <a href="{{ route('invoices.show', $order->payment) }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow whitespace-nowrap">
-                Lihat Invoice
-            </a>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('invoices.show', $order->payment) }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow whitespace-nowrap">
+                    Lihat Invoice
+                </a>
+                <a href="{{ route('invoices.pdf', $order->payment) }}" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow whitespace-nowrap">
+                    Download PDF
+                </a>
+            </div>
         @endif
     </div>
 
@@ -129,7 +134,7 @@
                 </div>
             </x-ui.card>
 
-            @if(!$order->payment)
+            @if(!$order->payment && auth()->user()->can('process-payment'))
                 <x-ui.card title="Input Pembayaran">
                     <form method="POST" action="{{ route('payments.store', $order) }}" class="space-y-4">
                         @csrf
@@ -158,7 +163,7 @@
                         </button>
                     </form>
                 </x-ui.card>
-            @else
+            @elseif($order->payment)
                 <x-ui.card title="Data Pembayaran">
                     <div class="space-y-3 text-sm">
                         <div>
@@ -177,8 +182,54 @@
                             <span class="text-gray-500 block">Tanggal Bayar</span>
                             <span class="text-gray-200">{{ $order->payment->payment_date?->format('d M Y H:i') ?? '-' }}</span>
                         </div>
+                        <div>
+                            <span class="text-gray-500 block">Status</span>
+                            <span class="text-green-400 font-semibold">{{ strtoupper($order->payment->status) }}</span>
+                        </div>
                     </div>
                 </x-ui.card>
+
+                @can('cancel-payment')
+                    @if($order->payment->status === 'lunas')
+                    <x-ui.card title="Batalkan Pembayaran">
+                        <form method="POST" action="{{ route('payments.cancel', $order->payment) }}" class="space-y-4">
+                            @csrf
+                            @method('PATCH')
+                            <p class="text-sm text-gray-400">
+                                Pembatalan tidak menghapus data payment/invoice. Status payment akan menjadi batal dan order kembali siap dibayar.
+                            </p>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Alasan Pembatalan</label>
+                                <textarea name="cancel_reason" rows="4" required minlength="10" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Contoh: Koreksi nominal karena diskon salah input."></textarea>
+                                <x-ui.field-error name="cancel_reason" />
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg" onclick="return confirm('Batalkan pembayaran ini? Data payment dan invoice tetap disimpan sebagai riwayat.')">
+                                Batalkan Pembayaran
+                            </button>
+                        </form>
+                    </x-ui.card>
+                    @endif
+                @endcan
+            @else
+                <x-ui.card title="Status Pembayaran">
+                    <p class="text-sm text-gray-400">Order ini siap dibayar. Proses input pembayaran hanya tersedia untuk role kasir.</p>
+                </x-ui.card>
+            @endif
+
+            @if($order->payments->where('status', 'batal')->count() > 0)
+            <x-ui.card title="Riwayat Pembayaran Batal">
+                <div class="space-y-3">
+                    @foreach($order->payments->where('status', 'batal') as $payment)
+                    <div class="bg-gray-900/50 border border-red-500/20 rounded-lg p-3 text-sm">
+                        <div class="flex justify-between gap-3">
+                            <span class="text-red-400 font-semibold">{{ $payment->payment_number }}</span>
+                            <span class="text-gray-500">{{ $payment->updated_at->format('d M Y H:i') }}</span>
+                        </div>
+                        <p class="text-gray-400 mt-2">{{ $payment->cancel_reason ?? '-' }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </x-ui.card>
             @endif
         </div>
     </div>

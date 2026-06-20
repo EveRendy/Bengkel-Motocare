@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -60,6 +61,7 @@ class RegisterController extends Controller
 
             // Login otomatis
             Auth::login($user);
+            AuditLogService::log('Registrasi akun pelanggan', 'auth', $user->id);
 
             return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang di MotoCare.');
         } catch (\Exception $e) {

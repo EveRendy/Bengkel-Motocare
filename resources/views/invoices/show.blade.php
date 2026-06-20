@@ -5,27 +5,31 @@
 <div class="max-w-5xl mx-auto space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div class="flex items-center gap-4">
-            <a href="{{ route('payments.show', $order) }}" class="text-gray-400 hover:text-gray-200">&larr; Kembali</a>
+            <a href="{{ auth()->user()->hasRole('pelanggan') ? route('booking.show', $order) : route('payments.show', $order) }}" class="text-gray-400 hover:text-gray-200">&larr; Kembali</a>
             <h1 class="text-2xl font-bold text-gray-100">Invoice {{ $payment->invoice->invoice_number ?? '-' }}</h1>
         </div>
-        <button onclick="window.print()" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg shadow">
-            Cetak Invoice
-        </button>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('invoices.pdf', $payment) }}" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow">
+                Download PDF
+            </a>
+            <button onclick="window.print()" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg shadow">
+                Cetak Invoice
+            </button>
+        </div>
     </div>
 
     <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-sm print:bg-white print:text-gray-900 print:border-0 print:shadow-none">
         <div class="p-8 border-b border-gray-700 print:border-gray-300">
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 print:shadow-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                    <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 print:shadow-none text-white font-bold">
+                        {{ $settings['workshop_logo_text'] ?? 'MC' }}
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-100 print:text-gray-900">MotoCare</h2>
-                        <p class="text-sm text-gray-400 print:text-gray-600">Sistem Informasi Bengkel Motor</p>
+                        <h2 class="text-2xl font-bold text-gray-100 print:text-gray-900">{{ $settings['workshop_name'] ?? 'MotoCare' }}</h2>
+                        <p class="text-sm text-gray-400 print:text-gray-600">{{ $settings['workshop_tagline'] ?? 'Sistem Informasi Bengkel Motor' }}</p>
+                        <p class="text-xs text-gray-500 print:text-gray-600 mt-1">{{ $settings['workshop_address'] ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 print:text-gray-600">{{ $settings['workshop_phone'] ?? '-' }} | {{ $settings['workshop_email'] ?? '-' }}</p>
                     </div>
                 </div>
 
