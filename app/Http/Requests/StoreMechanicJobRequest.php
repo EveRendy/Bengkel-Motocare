@@ -8,13 +8,17 @@ class StoreMechanicJobRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $order = $this->route('order');
+        $job = $this->route('job');
+        if (!$job) {
+            return false;
+        }
+        
+        $order = $job->serviceOrder;
 
         return $order
             && $this->user()
             && $this->user()->hasRole('mekanik')
-            && $order->mechanic_id === $this->user()->id
-            && $order->status === 'dikerjakan';
+            && $order->mechanic_id === $this->user()->id;
     }
 
     public function rules(): array

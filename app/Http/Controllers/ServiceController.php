@@ -66,4 +66,16 @@ class ServiceController extends Controller
         $service->update($data);
         return redirect()->route('services.index')->with('success', 'Layanan berhasil diubah.');
     }
+
+    public function destroy(Service $service)
+    {
+        Gate::authorize('manage-services');
+
+        // Catat log sebelum data dihapus (karena setelah dihapus, id mungkin tidak valid di beberapa log audit)
+        AuditLogService::log('Hapus layanan', 'services', $service->id);
+
+        $service->delete();
+
+        return redirect()->route('services.index')->with('success', 'Layanan berhasil dihapus.');
+    }
 }

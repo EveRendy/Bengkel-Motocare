@@ -84,7 +84,7 @@ class BookingController extends Controller
     public function show(ServiceOrder $order)
     {
         Gate::authorize('view-order', $order);
-        $order->load(['vehicle', 'serviceAdvisor', 'mechanic', 'services', 'spareparts', 'payment.invoice', 'payment.cashier']);
+        $order->load(['vehicle', 'serviceAdvisor', 'mechanic', 'services', 'spareparts', 'payment.invoice', 'payment.cashier', 'mechanicJob']);
         return view('booking.show', compact('order')); // Kita buat view terpisah untuk pelanggan agar tampilannya lebih simpel jika perlu, atau pakai view yang sama dengan admin (saya sediakan view-nya di bawah)
     }
 

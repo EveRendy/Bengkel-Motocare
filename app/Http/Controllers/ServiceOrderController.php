@@ -69,6 +69,16 @@ class ServiceOrderController extends Controller
             }
             $order->services()->attach($pivotData);
 
+            // Jika ada mechanic_id, buat MechanicJob
+            if (!empty($data['mechanic_id'])) {
+                \App\Models\MechanicJob::create([
+                    'service_order_id' => $order->id,
+                    'mechanic_id' => $data['mechanic_id'],
+                    'started_at' => null,
+                    'finished_at' => null,
+                ]);
+            }
+
             AuditLogService::log('Pembuatan order servis', 'service_orders', $order->id);
 
             return redirect()->route('service-orders.index')->with('success', 'Order servis berhasil dibuat.');
@@ -123,6 +133,21 @@ class ServiceOrderController extends Controller
                 $pivotData[$srv->id] = ['price_at_time' => $srv->price];
             }
             $order->services()->sync($pivotData);
+
+            // Jika ada mechanic_id, buat atau update MechanicJob
+            if (!empty($data['mechanic_id'])) {
+                $job = \App\Models\MechanicJob::where('service_order_id', $order->id)->first();
+                if (!$job) {
+                    \App\Models\MechanicJob::create([
+                        'service_order_id' => $order->id,
+                        'mechanic_id' => $data['mechanic_id'],
+                        'started_at' => null,
+                        'finished_at' => null,
+                    ]);
+                } else {
+                    $job->update(['mechanic_id' => $data['mechanic_id']]);
+                }
+            }
 
             AuditLogService::log('Ubah order servis', 'service_orders', $order->id);
 
@@ -310,6 +335,21 @@ class ServiceOrderController extends Controller
             }
             // Karena ini booking baru, kita pakai sync untuk memastikan bersih
             $order->services()->sync($pivotData);
+
+            // Jika ada mechanic_id, buat MechanicJob
+            if (!empty($data['mechanic_id'])) {
+                $job = \App\Models\MechanicJob::where('service_order_id', $order->id)->first();
+                if (!$job) {
+                    \App\Models\MechanicJob::create([
+                        'service_order_id' => $order->id,
+                        'mechanic_id' => $data['mechanic_id'],
+                        'started_at' => null,
+                        'finished_at' => null,
+                    ]);
+                } else {
+                    $job->update(['mechanic_id' => $data['mechanic_id']]);
+                }
+            }
 
             \App\Services\AuditLogService::log('Proses booking menjadi order', 'service_orders', $order->id);
 

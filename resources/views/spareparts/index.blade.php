@@ -49,6 +49,12 @@
                                 Tandai {{ $sp->stock_status === 'tersedia' ? 'Habis' : 'Tersedia' }}
                             </button>
                         </form>
+
+                        {{-- Delete Form --}}
+                        <form action="{{ route('spareparts.destroy', $sp) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus sparepart ini?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-red-400 hover:text-red-300">Hapus</button>
+                        </form>
                     </td>
                 </tr>
                 @empty

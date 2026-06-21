@@ -52,8 +52,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
     Route::post('service-categories', [ServiceCategoryController::class, 'store'])->name('service-categories.store');
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     
-    Route::resource('spareparts', SparepartController::class)->except(['show', 'destroy']);
+    Route::resource('spareparts', SparepartController::class)->except(['show']);
     Route::patch('spareparts/{sparepart}/status', [SparepartController::class, 'updateStatus'])->name('spareparts.status');
 
     // Service Orders (Admin & SA)

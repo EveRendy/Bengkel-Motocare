@@ -83,5 +83,32 @@
             @endif
         </div>
     </div>
+
+    @if($order->mechanicJob)
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-white mb-4">Laporan Hasil Mekanik</h2>
+            
+            @if($order->mechanicJob->inspection_result)
+                <div class="mb-4">
+                    <span class="text-gray-500 text-sm block mb-1">Hasil Pemeriksaan:</span>
+                    <p class="text-gray-200 bg-gray-900/50 p-3 rounded-lg">{{ $order->mechanicJob->inspection_result }}</p>
+                </div>
+            @endif
+
+            @if($order->mechanicJob->service_actions)
+                <div class="mb-4">
+                    <span class="text-gray-500 text-sm block mb-1">Tindakan Servis:</span>
+                    <p class="text-gray-200 bg-gray-900/50 p-3 rounded-lg">{{ $order->mechanicJob->service_actions }}</p>
+                </div>
+            @endif
+
+            @if($order->mechanicJob->mechanic_notes)
+                <div>
+                    <span class="text-gray-500 text-sm block mb-1">Catatan Tambahan:</span>
+                    <p class="text-gray-300 bg-gray-900/50 p-3 rounded-lg">{{ $order->mechanicJob->mechanic_notes }}</p>
+                </div>
+            @endif
+        </div>
+    @endif
 </div>
 @endsection

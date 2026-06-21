@@ -88,7 +88,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('update-mechanic-job', function ($user, $job) {
-            return $user->hasRole('mekanik') && $job->mechanic_id === $user->id && $job->serviceOrder->status === 'dikerjakan';
+            return $user->hasRole('mekanik') && $job->mechanic_id === $user->id;
         });
 
         Gate::define('complete-mechanic-job', function ($user, $job) {

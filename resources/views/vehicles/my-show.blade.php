@@ -53,9 +53,33 @@
 
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h2 class="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Riwayat Servis</h2>
-                <div class="p-8 text-center border-2 border-dashed border-gray-700 rounded-xl bg-gray-900/30">
-                    <p class="text-gray-400">Riwayat servis akan ditampilkan di sini setelah kendaraan pernah diservis di MotoCare.</p>
-                </div>
+                @if($vehicle->serviceOrders->count() > 0)
+                    <div class="space-y-3">
+                        @foreach($vehicle->serviceOrders as $order)
+                            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-orange-400 font-semibold">{{ $order->order_number }}</span>
+                                            <x-ui.status-badge :status="$order->status" />
+                                        </div>
+                                        <div class="text-sm text-gray-400 mt-1">{{ $order->created_at->translatedFormat('d F Y') }}</div>
+                                    </div>
+                                    <div class="text-sm text-gray-300">
+                                        @if($order->mechanicJob?->inspection_result)
+                                            <div class="font-medium text-gray-200">Hasil Pemeriksaan:</div>
+                                            <p class="mt-1">{{ Str::limit($order->mechanicJob->inspection_result, 80) }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="p-8 text-center border-2 border-dashed border-gray-700 rounded-xl bg-gray-900/30">
+                        <p class="text-gray-400">Riwayat servis akan ditampilkan di sini setelah kendaraan pernah diservis di MotoCare.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

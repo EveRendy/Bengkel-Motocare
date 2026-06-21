@@ -72,4 +72,18 @@ class SparepartController extends Controller
         
         return back()->with('success', 'Status sparepart diupdate.');
     }
+
+    public function destroy(Sparepart $sparepart)
+    {
+        Gate::authorize('manage-spareparts');
+
+        try {
+            $sparepart->delete();
+            AuditLogService::log('Hapus sparepart', 'spareparts', $sparepart->id);
+
+            return redirect()->route('spareparts.index')->with('success', 'Sparepart berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus sparepart: ' . $e->getMessage());
+        }
+    }
 }

@@ -45,11 +45,13 @@ class DashboardController extends Controller
                 ['label' => 'Selesai Servis', 'value' => MechanicJob::where('mechanic_id', $user->id)->whereHas('serviceOrder', fn ($q) => $q->where('status', 'selesai_servis'))->count(), 'color' => 'green'],
             ];
 
-            $recentOrders = ServiceOrder::where('mechanic_id', $user->id)
-                ->with(['customer', 'vehicle'])
+            // Ambil service orders melalui MechanicJob untuk konsistensi
+            $recentJobs = MechanicJob::where('mechanic_id', $user->id)
+                ->with(['serviceOrder.customer', 'serviceOrder.vehicle'])
                 ->latest()
                 ->limit(5)
                 ->get();
+            $recentOrders = $recentJobs->pluck('serviceOrder');
 
             $quickActions = [
                 ['label' => 'Buka Pekerjaan Saya', 'route' => 'mechanic-jobs.index'],

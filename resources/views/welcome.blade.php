@@ -46,9 +46,6 @@
                             <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl shadow-lg shadow-orange-600/20">
                                 Masuk ke Sistem
                             </a>
-                            <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-5 py-3 bg-gray-800/80 hover:bg-gray-700 text-gray-100 font-semibold rounded-xl border border-gray-700">
-                                Booking Sebagai Pelanggan
-                            </a>
                         </div>
                     </div>
 

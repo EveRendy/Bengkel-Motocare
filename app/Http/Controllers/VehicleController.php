@@ -179,6 +179,9 @@ class VehicleController extends Controller
     public function myShow(Vehicle $vehicle)
     {
         Gate::authorize('view-own-vehicle', $vehicle);
+        $vehicle->load(['fileUploads', 'serviceOrders' => function ($query) {
+            $query->with('mechanicJob')->orderBy('created_at', 'desc');
+        }]);
         return view('vehicles.my-show', compact('vehicle'));
     }
 
