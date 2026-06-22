@@ -16,7 +16,7 @@ class StorePaymentRequest extends FormRequest
     {
         return [
             'payment_method' => 'required|in:cash,transfer,qris',
-            'discount' => 'nullable|numeric|min:0',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
         ];
     }
 }

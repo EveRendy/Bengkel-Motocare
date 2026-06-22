@@ -227,7 +227,7 @@
         </tr>
         <tr>
             <td>Diskon</td>
-            <td class="right">Rp {{ number_format($payment->discount, 0, ',', '.') }}</td>
+            <td class="right">{{ $payment->discount_percent }}% (Rp {{ number_format($payment->discount, 0, ',', '.') }})</td>
         </tr>
         <tr class="grand-total">
             <td>Total Bayar</td>

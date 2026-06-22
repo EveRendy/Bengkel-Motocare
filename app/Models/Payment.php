@@ -14,6 +14,7 @@ class Payment extends Model
         'total_service',
         'total_sparepart',
         'discount',
+        'discount_percent',
         'total_amount',
         'payment_method',
         'status',

@@ -70,15 +70,17 @@ class PaymentController extends Controller
         $payment = DB::transaction(function () use ($request, $order) {
             $order->load(['services', 'spareparts']);
             $totals = $this->calculateTotals($order);
-            $discount = (float) ($request->discount ?? 0);
-            $totalAmount = max(0, $totals['total_service'] + $totals['total_sparepart'] - $discount);
+            $discountPercent = (float) ($request->discount_percent ?? 0);
+            $discountAmount = $totals['grand_total'] * ($discountPercent / 100);
+            $totalAmount = max(0, $totals['grand_total'] - $discountAmount);
 
             $payment = Payment::create([
                 'payment_number' => $this->generatePaymentNumber(),
                 'service_order_id' => $order->id,
                 'total_service' => $totals['total_service'],
                 'total_sparepart' => $totals['total_sparepart'],
-                'discount' => $discount,
+                'discount' => $discountAmount,
+                'discount_percent' => $discountPercent,
                 'total_amount' => $totalAmount,
                 'payment_method' => $request->payment_method,
                 'status' => 'lunas',
