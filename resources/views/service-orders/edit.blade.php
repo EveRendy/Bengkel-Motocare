@@ -14,14 +14,55 @@
         <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
             <h2 class="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Informasi Kendaraan & Pelanggan</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Pelanggan</label>
-                    <input type="text" value="{{ $order->customer->name }} ({{ $order->customer->customer_code }})" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-500 cursor-not-allowed" disabled>
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Kendaraan</label>
-                    <input type="text" value="{{ $order->vehicle->license_plate }} - {{ $order->vehicle->brand }}" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-500 cursor-not-allowed" disabled>
-                </div>
+                @if($order->customer_id)
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Pelanggan Terdaftar</label>
+                        <input type="text" value="{{ $order->customer->name }} ({{ $order->customer->customer_code }})" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-500 cursor-not-allowed" disabled>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Kendaraan</label>
+                        <input type="text" value="{{ $order->vehicle->license_plate }} - {{ $order->vehicle->brand }} {{ $order->vehicle->type }}" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-gray-500 cursor-not-allowed" disabled>
+                    </div>
+                @else
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Nama Pelanggan Walk-in</label>
+                        <input type="text" name="walkin_customer_name" value="{{ old('walkin_customer_name', $order->walkin_customer_name) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Nomor Telepon</label>
+                        <input type="text" name="walkin_customer_phone" value="{{ old('walkin_customer_phone', $order->walkin_customer_phone) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Email (Opsional)</label>
+                        <input type="email" name="walkin_customer_email" value="{{ old('walkin_customer_email', $order->walkin_customer_email) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Alamat (Opsional)</label>
+                        <input type="text" name="walkin_customer_address" value="{{ old('walkin_customer_address', $order->walkin_customer_address) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Plat Nomor</label>
+                        <input type="text" name="walkin_vehicle_license_plate" value="{{ old('walkin_vehicle_license_plate', $order->walkin_vehicle_license_plate) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Merk</label>
+                        <input type="text" name="walkin_vehicle_brand" value="{{ old('walkin_vehicle_brand', $order->walkin_vehicle_brand) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Tipe</label>
+                        <input type="text" name="walkin_vehicle_type" value="{{ old('walkin_vehicle_type', $order->walkin_vehicle_type) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Tahun</label>
+                        <input type="number" name="walkin_vehicle_year" value="{{ old('walkin_vehicle_year', $order->walkin_vehicle_year) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Warna</label>
+                        <input type="text" name="walkin_vehicle_color" value="{{ old('walkin_vehicle_color', $order->walkin_vehicle_color) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    </div>
+                @endif
+
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Tanggal Servis</label>
                     <input type="date" name="order_date" value="{{ old('order_date', \Carbon\Carbon::parse($order->order_date)->format('Y-m-d')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100 focus:ring-2 focus:ring-orange-500/50" required>

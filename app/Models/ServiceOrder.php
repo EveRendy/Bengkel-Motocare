@@ -22,6 +22,15 @@ class ServiceOrder extends Model
         'estimated_cost',
         'status',
         'notes',
+        'walkin_customer_name',
+        'walkin_customer_phone',
+        'walkin_customer_email',
+        'walkin_customer_address',
+        'walkin_vehicle_license_plate',
+        'walkin_vehicle_brand',
+        'walkin_vehicle_type',
+        'walkin_vehicle_year',
+        'walkin_vehicle_color',
     ];
 
     protected function casts(): array

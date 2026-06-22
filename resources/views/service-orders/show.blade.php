@@ -70,11 +70,35 @@
             </div>
 
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Informasi Kendaraan</h2>
+                <h2 class="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Informasi Kendaraan & Pelanggan</h2>
                 <div class="space-y-3 text-sm">
-                    <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-lg">{{ $order->vehicle->license_plate }}</span></div>
-                    <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $order->vehicle->brand }} {{ $order->vehicle->type }}</span></div>
-                    <div><span class="block text-gray-500">Pelanggan</span><span class="text-gray-200">{{ $order->customer->name }}</span></div>
+                    @if($order->customer_id)
+                        <div><span class="block text-gray-500">Pelanggan Terdaftar</span><span class="text-gray-200 font-bold">{{ $order->customer->name }}</span></div>
+                    @else
+                        <div><span class="block text-gray-500">Nama Pelanggan Walk-in</span><span class="text-gray-200 font-bold">{{ $order->walkin_customer_name ?? '-' }}</span></div>
+                        @if($order->walkin_customer_phone)
+                            <div><span class="block text-gray-500">Telepon</span><span class="text-gray-200">{{ $order->walkin_customer_phone }}</span></div>
+                        @endif
+                        @if($order->walkin_customer_email)
+                            <div><span class="block text-gray-500">Email</span><span class="text-gray-200">{{ $order->walkin_customer_email }}</span></div>
+                        @endif
+                        @if($order->walkin_customer_address)
+                            <div><span class="block text-gray-500">Alamat</span><span class="text-gray-200">{{ $order->walkin_customer_address }}</span></div>
+                        @endif
+                    @endif
+
+                    @if($order->vehicle_id)
+                        <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-lg">{{ $order->vehicle->license_plate }}</span></div>
+                        <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $order->vehicle->brand }} {{ $order->vehicle->type }}</span></div>
+                        <div><span class="block text-gray-500">Tahun</span><span class="text-gray-200">{{ $order->vehicle->year ?? '-' }}</span></div>
+                        <div><span class="block text-gray-500">Warna</span><span class="text-gray-200">{{ $order->vehicle->color ?? '-' }}</span></div>
+                    @else
+                        <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-lg">{{ $order->walkin_vehicle_license_plate ?? '-' }}</span></div>
+                        <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $order->walkin_vehicle_brand }} {{ $order->walkin_vehicle_type }}</span></div>
+                        <div><span class="block text-gray-500">Tahun</span><span class="text-gray-200">{{ $order->walkin_vehicle_year ?? '-' }}</span></div>
+                        <div><span class="block text-gray-500">Warna</span><span class="text-gray-200">{{ $order->walkin_vehicle_color ?? '-' }}</span></div>
+                    @endif
+
                     <div><span class="block text-gray-500">Kilometer Saat Ini</span><span class="text-gray-200">{{ number_format($order->current_km, 0, ',', '.') }} KM</span></div>
                 </div>
             </div>

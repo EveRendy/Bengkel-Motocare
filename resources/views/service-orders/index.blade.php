@@ -47,8 +47,28 @@
                     <tr class="hover:bg-gray-700/30 transition">
                         <td class="px-4 py-3 font-medium text-orange-400">{{ $order->order_number }}</td>
                         <td class="px-4 py-3">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
-                        <td class="px-4 py-3">{{ $order->customer->name ?? '-' }}</td>
-                        <td class="px-4 py-3">{{ $order->vehicle->license_plate ?? '-' }}</td>
+                        <td class="px-4 py-3">
+                            @if($order->customer_id)
+                                {{ $order->customer->name }}
+                            @else
+                                {{ $order->walkin_customer_name ?? '-' }}
+                                @if($order->walkin_customer_phone)
+                                    <span class="text-gray-500 text-xs block">{{ $order->walkin_customer_phone }}</span>
+                                @endif
+                            @endif
+                        </td>
+                        <td class="px-4 py-3">
+                            @if($order->vehicle_id)
+                                {{ $order->vehicle->license_plate }}
+                            @else
+                                {{ $order->walkin_vehicle_license_plate ?? '-' }}
+                                @if($order->walkin_vehicle_brand || $order->walkin_vehicle_type)
+                                    <span class="text-gray-500 text-xs block">
+                                        {{ $order->walkin_vehicle_brand }} {{ $order->walkin_vehicle_type }}
+                                    </span>
+                                @endif
+                            @endif
+                        </td>
                         <td class="px-4 py-3">
                             @if($order->mechanic_id)
                                 {{ $order->mechanic->name }}

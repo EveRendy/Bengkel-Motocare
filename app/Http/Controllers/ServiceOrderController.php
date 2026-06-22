@@ -52,6 +52,13 @@ class ServiceOrderController extends Controller
             $data['order_number'] = $this->generateOrderNumber();
             $data['status'] = $data['mechanic_id'] ? 'menunggu' : 'terdaftar';
             $data['service_advisor_id'] = auth()->id();
+
+            // For walk-in customers, set customer_id and vehicle_id to null
+            if ($data['customer_type'] === 'walkin') {
+                $data['customer_id'] = null;
+                $data['vehicle_id'] = null;
+            }
+            unset($data['customer_type']);
             
             // Hitung estimasi biaya dari layanan yang dipilih
             $selectedServices = Service::whereIn('id', $data['services'])->get();

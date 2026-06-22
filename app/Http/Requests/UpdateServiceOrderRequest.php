@@ -22,6 +22,17 @@ class UpdateServiceOrderRequest extends FormRequest
             'services.*' => 'exists:services,id',
             'mechanic_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
+            // Walk-in customer fields
+            'walkin_customer_name' => 'nullable|string|max:255',
+            'walkin_customer_phone' => 'nullable|string|max:20',
+            'walkin_customer_email' => 'nullable|email',
+            'walkin_customer_address' => 'nullable|string',
+            // Walk-in vehicle fields
+            'walkin_vehicle_license_plate' => 'nullable|string|max:20',
+            'walkin_vehicle_brand' => 'nullable|string|max:255',
+            'walkin_vehicle_type' => 'nullable|string|max:255',
+            'walkin_vehicle_year' => 'nullable|integer',
+            'walkin_vehicle_color' => 'nullable|string|max:255',
         ];
     }
 }
