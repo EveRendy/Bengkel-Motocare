@@ -24,9 +24,9 @@
                 @if($job->serviceOrder->status === 'dikerjakan')
                     <a href="{{ route('mechanic-jobs.edit', $job) }}" class="px-5 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow font-medium">📝 Input Hasil</a>
                     
-                    <form action="{{ route('mechanic-jobs.complete', $job) }}" method="POST" onsubmit="return confirm('Tandai pekerjaan ini selesai? Pastikan hasil pemeriksaan & tindakan servis sudah diisi.')">
+                    <form action="{{ route('mechanic-jobs.complete', $job) }}" method="POST">
                         @csrf @method('PATCH')
-                        <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow font-medium">✅ Tandai Selesai Servis</button>
+                        <button type="button" data-confirm-submit data-confirm-variant="warning" data-confirm-title="Selesaikan Pekerjaan" data-confirm-message="Tandai pekerjaan ini selesai? Pastikan hasil pemeriksaan dan tindakan servis sudah diisi." data-confirm-text="Tandai Selesai" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow font-medium">✅ Tandai Selesai Servis</button>
                     </form>
                 @endif
                 
@@ -131,7 +131,7 @@
                                     <form action="{{ route('mechanic-jobs.spareparts.remove', [$job, $part->id]) }}" method="POST" class="inline">
                                         @csrf @method('DELETE')
                                         <input type="hidden" name="pivot_id" value="{{ $part->pivot->id }}">
-                                        <button type="submit" class="text-red-400 hover:text-red-300 bg-red-400/10 px-2 py-1 rounded border border-red-400/20" onclick="return confirm('Hapus sparepart ini?')">Hapus</button>
+                                        <button type="button" data-confirm-submit data-confirm-title="Hapus Sparepart" data-confirm-message="Hapus sparepart ini dari pengerjaan?" data-confirm-text="Hapus" class="text-red-400 hover:text-red-300 bg-red-400/10 px-2 py-1 rounded border border-red-400/20">Hapus</button>
                                     </form>
                                 </td>
                                 @endif

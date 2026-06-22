@@ -12,18 +12,18 @@
         <div class="flex gap-2">
             @if(in_array($order->status, ['terdaftar', 'menunggu']))
                 <a href="{{ route('service-orders.edit', $order) }}" class="px-4 py-2 bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 border border-yellow-500/20 rounded-lg shadow font-medium">Edit / Assign</a>
-                <form action="{{ route('service-orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Batalkan order ini?')">
+                <form action="{{ route('service-orders.cancel', $order) }}" method="POST">
                     @csrf @method('PATCH')
                     <input type="hidden" name="cancel_reason" value="Dibatalkan dari halaman detail oleh Admin/SA">
-                    <button type="submit" class="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg shadow font-medium">Batalkan</button>
+                    <button type="button" data-confirm-submit data-confirm-title="Batalkan Order" data-confirm-message="Batalkan order servis ini?" data-confirm-text="Batalkan Order" class="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg shadow font-medium">Batalkan</button>
                 </form>
             @endif
             
             @if($order->status == 'menunggu' && $order->mechanic_id)
                 {{-- Tombol Force Start (Hanya untuk emergency) --}}
-                <form action="{{ route('service-orders.start', $order) }}" method="POST" onsubmit="return confirm('Mekanik belum mengklik mulai. Yakin ingin memaksa mulai status order ini? (Normalnya mekanik yang menekan tombol mulai di akun mereka)')">
+                <form action="{{ route('service-orders.start', $order) }}" method="POST">
                     @csrf @method('PATCH')
-                    <button type="submit" class="px-4 py-2 bg-orange-600/50 hover:bg-orange-700 text-white border border-orange-500/50 rounded-lg shadow text-sm font-medium">⚠️ Force Start</button>
+                    <button type="button" data-confirm-submit data-confirm-variant="warning" data-confirm-title="Force Start Order" data-confirm-message="Mekanik belum mengklik mulai. Yakin ingin memaksa mulai status order ini?" data-confirm-text="Force Start" class="px-4 py-2 bg-orange-600/50 hover:bg-orange-700 text-white border border-orange-500/50 rounded-lg shadow text-sm font-medium">⚠️ Force Start</button>
                 </form>
             @endif
         </div>

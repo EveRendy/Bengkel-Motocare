@@ -219,5 +219,6 @@
         </footer>
     </div>
 </div>
+@include('components.ui.confirm-modal')
 </body>
 </html>

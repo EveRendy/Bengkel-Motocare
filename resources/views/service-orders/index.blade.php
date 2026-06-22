@@ -88,7 +88,7 @@
                             @if($order->status == 'menunggu' && $order->mechanic_id)
                                 <form action="{{ route('service-orders.start', $order) }}" method="POST">
                                     @csrf @method('PATCH')
-                                    <button type="submit" class="text-orange-400 hover:text-orange-300 bg-orange-400/10 px-2 py-1 rounded" onclick="return confirm('Force start order ini?')">Kerjakan</button>
+                                    <button type="button" data-confirm-submit data-confirm-variant="warning" data-confirm-title="Force Start Order" data-confirm-message="Force start order ini?" data-confirm-text="Kerjakan" class="text-orange-400 hover:text-orange-300 bg-orange-400/10 px-2 py-1 rounded">Kerjakan</button>
                                 </form>
                             @endif
                         </td>

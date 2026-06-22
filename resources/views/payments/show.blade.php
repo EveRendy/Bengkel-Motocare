@@ -159,7 +159,7 @@
                                 <span class="text-xl text-green-400 font-bold">Rp {{ number_format($payableTotal, 0, ',', '.') }}</span>
                             </div>
                         </div>
-                        <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg" onclick="return confirm('Proses pembayaran dan generate invoice?')">
+                        <button type="button" data-confirm-submit data-confirm-variant="warning" data-confirm-title="Proses Pembayaran" data-confirm-message="Proses pembayaran dan generate invoice untuk order ini?" data-confirm-text="Proses Pembayaran" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg">
                             Proses Pembayaran
                         </button>
                     </form>
@@ -204,7 +204,7 @@
                                 <textarea name="cancel_reason" rows="4" required minlength="10" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Contoh: Koreksi nominal karena diskon salah input."></textarea>
                                 <x-ui.field-error name="cancel_reason" />
                             </div>
-                            <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg" onclick="return confirm('Batalkan pembayaran ini? Data payment dan invoice tetap disimpan sebagai riwayat.')">
+                            <button type="button" data-confirm-submit data-confirm-title="Batalkan Pembayaran" data-confirm-message="Batalkan pembayaran ini? Data payment dan invoice tetap disimpan sebagai riwayat." data-confirm-text="Batalkan Pembayaran" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg">
                                 Batalkan Pembayaran
                             </button>
                         </form>

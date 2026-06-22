@@ -42,9 +42,9 @@
                             @can('manage-customers')
                             <a href="{{ route('customers.edit', $cust) }}" class="text-yellow-400 hover:text-yellow-300">Edit</a>
                             @if($cust->status === 'aktif')
-                            <form action="{{ route('customers.deactivate', $cust) }}" method="POST" onsubmit="return confirm('Nonaktifkan pelanggan ini?');">
+                            <form action="{{ route('customers.deactivate', $cust) }}" method="POST">
                                 @csrf @method('PATCH')
-                                <button type="submit" class="text-red-400 hover:text-red-300">Nonaktifkan</button>
+                                <button type="button" data-confirm-submit data-confirm-title="Nonaktifkan Pelanggan" data-confirm-message="Nonaktifkan pelanggan ini?" data-confirm-text="Nonaktifkan" class="text-red-400 hover:text-red-300">Nonaktifkan</button>
                             </form>
                             @endif
                             @endcan

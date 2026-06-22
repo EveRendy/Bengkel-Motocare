@@ -39,9 +39,9 @@
                         @can('manage-vehicles')
                         <a href="{{ route('vehicles.edit', $veh) }}" class="text-yellow-400 hover:text-yellow-300">Edit</a>
                         @if($veh->status === 'aktif')
-                        <form action="{{ route('vehicles.deactivate', $veh) }}" method="POST" onsubmit="return confirm('Nonaktifkan kendaraan ini?');">
+                        <form action="{{ route('vehicles.deactivate', $veh) }}" method="POST">
                             @csrf @method('PATCH')
-                            <button type="submit" class="text-red-400 hover:text-red-300">Nonaktifkan</button>
+                            <button type="button" data-confirm-submit data-confirm-title="Nonaktifkan Kendaraan" data-confirm-message="Nonaktifkan kendaraan ini?" data-confirm-text="Nonaktifkan" class="text-red-400 hover:text-red-300">Nonaktifkan</button>
                         </form>
                         @endif
                         @endcan

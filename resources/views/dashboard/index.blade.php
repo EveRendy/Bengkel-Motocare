@@ -69,7 +69,7 @@
                         <th class="px-6 py-3">Pelanggan</th>
                         <th class="px-6 py-3">Kendaraan</th>
                         <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Tanggal</th>
+                        <th class="px-6 py-3">Waktu</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700/30">

@@ -51,9 +51,9 @@
                         </form>
 
                         {{-- Delete Form --}}
-                        <form action="{{ route('spareparts.destroy', $sp) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus sparepart ini?')">
+                        <form action="{{ route('spareparts.destroy', $sp) }}" method="POST">
                             @csrf @method('DELETE')
-                            <button type="submit" class="text-red-400 hover:text-red-300">Hapus</button>
+                            <button type="button" data-confirm-submit data-confirm-title="Hapus Sparepart" data-confirm-message="Yakin ingin menghapus sparepart ini?" data-confirm-text="Hapus" class="text-red-400 hover:text-red-300">Hapus</button>
                         </form>
                     </td>
                 </tr>
