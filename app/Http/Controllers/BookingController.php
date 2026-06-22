@@ -17,7 +17,7 @@ class BookingController extends Controller
         if (!$customerId) abort(403);
 
         $orders = ServiceOrder::where('customer_id', $customerId)
-            ->with(['vehicle'])
+            ->with(['vehicle', 'payment.invoice'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -84,7 +84,7 @@ class BookingController extends Controller
     public function show(ServiceOrder $order)
     {
         Gate::authorize('view-order', $order);
-        $order->load(['vehicle', 'serviceAdvisor', 'mechanic', 'services']);
+        $order->load(['vehicle', 'serviceAdvisor', 'mechanic', 'services', 'spareparts', 'payment.invoice', 'payment.cashier', 'mechanicJob']);
         return view('booking.show', compact('order')); // Kita buat view terpisah untuk pelanggan agar tampilannya lebih simpel jika perlu, atau pakai view yang sama dengan admin (saya sediakan view-nya di bawah)
     }
 

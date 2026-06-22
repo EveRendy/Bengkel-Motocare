@@ -113,4 +113,123 @@ class VehicleController extends Controller
             'size' => $file->getSize(),
         ]);
     }
+
+    // =========================================================================
+    // FITUR KENDARAAN SAYA (KHUSUS PELANGGAN)
+    // =========================================================================
+
+    public function myVehicles()
+    {
+        Gate::authorize('manage-own-vehicles');
+        
+        $customerId = auth()->user()->customer->id ?? null;
+        if (!$customerId) {
+            return redirect()->route('dashboard')->with('error', 'Profil pelanggan tidak ditemukan.');
+        }
+
+        $vehicles = Vehicle::where('customer_id', $customerId)
+            ->with('fileUploads')
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('vehicles.my-index', compact('vehicles'));
+    }
+
+    public function myCreate()
+    {
+        Gate::authorize('manage-own-vehicles');
+        return view('vehicles.my-create');
+    }
+
+    public function myStore(\App\Http\Requests\StoreMyVehicleRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            
+            // Auto isi customer_id dengan ID pelanggan yang sedang login
+            $data['customer_id'] = auth()->user()->customer->id;
+            $data['status'] = 'aktif';
+
+            // Pisahkan foto jika ada
+            $photo = null;
+            if (isset($data['photo'])) {
+                $photo = $data['photo'];
+                unset($data['photo']);
+            }
+
+            $vehicle = Vehicle::create($data);
+
+            if ($photo) {
+                $path = $photo->store('vehicles', 'public');
+                $vehicle->fileUploads()->create([
+                    'file_path' => $path,
+                    'file_type' => 'image',
+                    'original_name' => $photo->getClientOriginalName()
+                ]);
+            }
+
+            AuditLogService::log('Tambah kendaraan sendiri', 'vehicles', $vehicle->id);
+
+            return redirect()->route('my-vehicles.index')->with('success', 'Kendaraan berhasil ditambahkan. Data akan diverifikasi saat servis pertama.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Gagal menambah kendaraan: ' . $e->getMessage());
+        }
+    }
+
+    public function myShow(Vehicle $vehicle)
+    {
+        Gate::authorize('view-own-vehicle', $vehicle);
+        $vehicle->load(['fileUploads', 'serviceOrders' => function ($query) {
+            $query->with('mechanicJob')->orderBy('created_at', 'desc');
+        }]);
+        return view('vehicles.my-show', compact('vehicle'));
+    }
+
+    public function myEdit(Vehicle $vehicle)
+    {
+        Gate::authorize('update-own-vehicle', $vehicle);
+        return view('vehicles.my-edit', compact('vehicle'));
+    }
+
+    public function myUpdate(\App\Http\Requests\UpdateMyVehicleRequest $request, Vehicle $vehicle)
+    {
+        try {
+            $data = $request->validated();
+            
+            // Pisahkan foto jika ada
+            $photo = null;
+            if (isset($data['photo'])) {
+                $photo = $data['photo'];
+                unset($data['photo']);
+            }
+
+            // license_plate sengaja diabaikan karena tidak boleh diubah,
+            // validasi di Request juga sudah meng-exclude field tersebut.
+
+            $vehicle->update($data);
+
+            if ($photo) {
+                // Hapus foto lama jika ada
+                if ($vehicle->fileUploads->count() > 0) {
+                    foreach ($vehicle->fileUploads as $file) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($file->file_path);
+                        $file->delete();
+                    }
+                }
+
+                $path = $photo->store('vehicles', 'public');
+                $vehicle->fileUploads()->create([
+                    'file_path' => $path,
+                    'file_type' => 'image',
+                    'original_name' => $photo->getClientOriginalName()
+                ]);
+            }
+
+            AuditLogService::log('Ubah kendaraan sendiri', 'vehicles', $vehicle->id);
+
+            return redirect()->route('my-vehicles.index')->with('success', 'Data kendaraan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Gagal memperbarui kendaraan.');
+        }
+    }
 }

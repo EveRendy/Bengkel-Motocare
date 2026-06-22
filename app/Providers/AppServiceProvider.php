@@ -43,7 +43,10 @@ class AppServiceProvider extends ServiceProvider
         // Mechanics & Cashiers
         Gate::define('handle-mechanic-job', fn($user, $job) => $user->hasRole('mekanik') && $job->mechanic_id === $user->id);
         Gate::define('process-payment', fn($user) => $user->hasRole('kasir'));
+        Gate::define('cancel-payment', fn($user) => $user->hasRole('admin') || $user->hasRole('manager'));
         Gate::define('view-reports', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
+        Gate::define('view-audit-logs', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
+        Gate::define('manage-settings', fn($user) => $user->hasRole('manager') || $user->hasRole('admin'));
 
         Gate::define('create-booking', fn($user) => $user->hasRole('pelanggan'));
         
@@ -63,6 +66,38 @@ class AppServiceProvider extends ServiceProvider
         
         Gate::define('assign-mechanic', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
         
-        Gate::define('view-mechanic-jobs', fn($user) => $user->hasRole('mekanik') || $user->hasRole('admin') || $user->hasRole('service_advisor'));
+        // Manajemen Kendaraan Milik Sendiri (Pelanggan)
+        Gate::define('manage-own-vehicles', function ($user) {
+            return $user->hasRole('pelanggan');
+        });
+        Gate::define('view-own-vehicle', function ($user, $vehicle) {
+            return $user->hasRole('pelanggan') && $vehicle->customer && $vehicle->customer->user_id === $user->id;
+        });
+        Gate::define('update-own-vehicle', function ($user, $vehicle) {
+            return $user->hasRole('pelanggan') && $vehicle->customer && $vehicle->customer->user_id === $user->id;
+        });
+
+        // Mechanic Jobs (Modul Mekanik)
+        Gate::define('view-mechanic-jobs', function ($user) {
+            return $user->hasRole('admin') || $user->hasRole('service_advisor') || $user->hasRole('mekanik');
+        });
+
+        Gate::define('view-mechanic-job', function ($user, $job) {
+            if ($user->hasRole('admin') || $user->hasRole('service_advisor')) return true;
+            return $user->hasRole('mekanik') && $job->mechanic_id === $user->id;
+        });
+
+        Gate::define('update-mechanic-job', function ($user, $job) {
+            return $user->hasRole('mekanik') && $job->mechanic_id === $user->id;
+        });
+
+        Gate::define('complete-mechanic-job', function ($user, $job) {
+            return $user->hasRole('mekanik') && $job->mechanic_id === $user->id && $job->serviceOrder->status === 'dikerjakan';
+        });
+
+        // Booking Flow
+        Gate::define('process-booking', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
+        Gate::define('view-bookings', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));
+    
     }
 }
