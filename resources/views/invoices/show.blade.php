@@ -120,7 +120,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-500 print:text-gray-600">Diskon</span>
-                        <span class="text-gray-200 print:text-gray-800">Rp {{ number_format($payment->discount, 0, ',', '.') }}</span>
+                        <span class="text-gray-200 print:text-gray-800">{{ $payment->discount_percent }}% (Rp {{ number_format($payment->discount, 0, ',', '.') }})</span>
                     </div>
                     <div class="flex justify-between border-t border-gray-700 pt-3 print:border-gray-300">
                         <span class="text-gray-100 font-semibold print:text-gray-900">Total Bayar</span>

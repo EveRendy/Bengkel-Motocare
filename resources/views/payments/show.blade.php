@@ -3,8 +3,9 @@
 
 @section('content')
 @php
-    $discount = old('discount', $order->payment->discount ?? 0);
-    $payableTotal = max(0, $totals['grand_total'] - (float) $discount);
+    $discountPercent = old('discount_percent', $order->payment->discount_percent ?? 0);
+    $discountAmount = $totals['grand_total'] * ($discountPercent / 100);
+    $payableTotal = max(0, $totals['grand_total'] - $discountAmount);
 @endphp
 
 <div class="max-w-5xl mx-auto space-y-6">
@@ -124,7 +125,7 @@
                     @if($order->payment)
                         <div class="flex justify-between">
                             <span class="text-gray-500">Diskon</span>
-                            <span class="text-gray-200">Rp {{ number_format($order->payment->discount, 0, ',', '.') }}</span>
+                            <span class="text-gray-200">{{ $order->payment->discount_percent }}% (Rp {{ number_format($order->payment->discount, 0, ',', '.') }})</span>
                         </div>
                         <div class="flex justify-between border-t border-gray-700 pt-3">
                             <span class="text-gray-200 font-semibold">Total Bayar</span>
@@ -148,9 +149,9 @@
                             <x-ui.field-error name="payment_method" />
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-400 mb-1">Diskon</label>
-                            <input type="number" min="0" name="discount" value="{{ old('discount', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
-                            <x-ui.field-error name="discount" />
+                            <label class="block text-sm text-gray-400 mb-1">Diskon (%)</label>
+                            <input type="number" min="0" max="100" step="0.01" name="discount_percent" value="{{ old('discount_percent', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                            <x-ui.field-error name="discount_percent" />
                         </div>
                         <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
                             <div class="flex justify-between text-sm">
