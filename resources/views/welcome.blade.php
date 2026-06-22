@@ -58,26 +58,47 @@
                                 <span class="ml-3 text-xs text-gray-500">motocare.local/dashboard</span>
                             </div>
                             <div class="p-5 space-y-4">
+                                @php
+                                    $queueStatusColors = [
+                                        'terdaftar' => 'text-blue-400',
+                                        'menunggu' => 'text-yellow-400',
+                                        'dikerjakan' => 'text-orange-400',
+                                        'selesai_servis' => 'text-purple-400',
+                                    ];
+                                @endphp
                                 <div class="grid grid-cols-3 gap-3">
                                     <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
-                                        <p class="text-2xl font-bold text-white">24</p>
+                                        <p class="text-2xl font-bold text-white">{{ $queueStats['today_orders'] ?? 0 }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Order Hari Ini</p>
                                     </div>
                                     <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
-                                        <p class="text-2xl font-bold text-orange-400">8</p>
+                                        <p class="text-2xl font-bold text-orange-400">{{ $queueStats['in_progress'] ?? 0 }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Dikerjakan</p>
                                     </div>
                                     <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
-                                        <p class="text-2xl font-bold text-green-400">16</p>
+                                        <p class="text-2xl font-bold text-green-400">{{ $queueStats['completed_today'] ?? 0 }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Selesai</p>
                                     </div>
                                 </div>
                                 <div class="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
                                     <div class="px-4 py-3 border-b border-gray-700 text-sm font-semibold text-gray-200">Antrean Servis</div>
                                     <div class="divide-y divide-gray-700/60 text-sm">
-                                        <div class="px-4 py-3 flex justify-between"><span>Honda Beat - B 1234 XYZ</span><span class="text-yellow-400">Menunggu</span></div>
-                                        <div class="px-4 py-3 flex justify-between"><span>Yamaha NMAX - B 8877 CD</span><span class="text-orange-400">Dikerjakan</span></div>
-                                        <div class="px-4 py-3 flex justify-between"><span>Suzuki Address - B 9081 QA</span><span class="text-purple-400">Selesai Servis</span></div>
+                                        @forelse($queueOrders ?? collect() as $order)
+                                            @php
+                                                $vehicle = $order->vehicle;
+                                                $vehicleLabel = trim(($vehicle->brand ?? 'Motor') . ' ' . ($vehicle->type ?? ''));
+                                                $statusClass = $queueStatusColors[$order->status] ?? 'text-gray-400';
+                                                $statusLabel = str_replace('_', ' ', ucwords($order->status, '_'));
+                                            @endphp
+                                            <div class="px-4 py-3 flex items-center justify-between gap-4">
+                                                <span class="truncate">{{ $vehicleLabel ?: 'Motor' }} - {{ $vehicle->license_plate ?? $order->order_number }}</span>
+                                                <span class="{{ $statusClass }} whitespace-nowrap">{{ $statusLabel }}</span>
+                                            </div>
+                                        @empty
+                                            <div class="px-4 py-6 text-center text-gray-500">
+                                                Belum ada antrean servis yang diproses advisor.
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MechanicJobController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
@@ -17,11 +18,7 @@ use App\Http\Controllers\SparepartController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('dashboard')
-        : view('welcome');
-});
+Route::get('/', [LandingController::class, 'index']);
 
 // Guest
 Route::middleware('guest')->group(function () {
