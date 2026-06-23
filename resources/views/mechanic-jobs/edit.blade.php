@@ -12,7 +12,15 @@
     <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-sm">
         <div class="grid grid-cols-2 gap-4 text-sm text-gray-300">
             <div><span class="block text-gray-500 mb-1">No Order:</span> <strong class="text-orange-400">{{ $job->serviceOrder->order_number }}</strong></div>
-            <div><span class="block text-gray-500 mb-1">Kendaraan:</span> <strong>{{ $job->serviceOrder->vehicle->license_plate }} ({{ $job->serviceOrder->vehicle->brand }})</strong></div>
+            <div><span class="block text-gray-500 mb-1">Kendaraan:</span> 
+                <strong>
+                    @if($job->serviceOrder->vehicle_id)
+                        {{ $job->serviceOrder->vehicle->license_plate }} ({{ $job->serviceOrder->vehicle->brand }})
+                    @else
+                        {{ $job->serviceOrder->walkin_vehicle_license_plate ?? '-' }} ({{ $job->serviceOrder->walkin_vehicle_brand }})
+                    @endif
+                </strong>
+            </div>
         </div>
         <div class="mt-4 pt-4 border-t border-gray-700">
             <span class="block text-gray-500 mb-1 text-sm">Keluhan Pelanggan:</span>

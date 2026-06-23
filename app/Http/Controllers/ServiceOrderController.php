@@ -176,6 +176,12 @@ class ServiceOrderController extends Controller
                 'notes' => $order->notes . "\n\nAlasan Batal (Oleh " . auth()->user()->name . "): " . $request->cancel_reason
             ]);
 
+            // Delete associated MechanicJob if exists
+            $mechanicJob = \App\Models\MechanicJob::where('service_order_id', $order->id)->first();
+            if ($mechanicJob) {
+                $mechanicJob->delete();
+            }
+
             AuditLogService::log('Pembatalan order servis', 'service_orders', $order->id);
             return back()->with('success', 'Order dibatalkan.');
         } catch (\Exception $e) {

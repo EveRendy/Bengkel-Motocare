@@ -61,7 +61,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('cancel-order', function ($user, $order) {
             if (!in_array($order->status, ['terdaftar', 'menunggu'])) return false;
             if ($user->hasRole('admin') || $user->hasRole('service_advisor')) return true;
-            return $user->hasRole('pelanggan') && $order->customer->user_id === $user->id;
+            if ($user->hasRole('pelanggan')) {
+                // For registered customers, check if it's their order
+                if ($order->customer_id) {
+                    return $order->customer->user_id === $user->id;
+                }
+                // Walk-in customers can't cancel orders (since they aren't logged in)
+                return false;
+            }
+            return false;
         });
         
         Gate::define('assign-mechanic', fn($user) => $user->hasRole('admin') || $user->hasRole('service_advisor'));

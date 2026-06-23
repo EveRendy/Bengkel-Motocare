@@ -23,6 +23,7 @@
                     <span class="text-gray-200">Pelanggan Langsung (Walk-in)</span>
                 </label>
             </div>
+            @error('customer_type') <span class="text-red-400 text-xs mt-2 block">{{ $message }}</span> @enderror
         </div>
 
         <div id="registered_customer_fields" class="bg-gray-800 border border-gray-700 rounded-xl p-6 {{ old('customer_type') == 'walkin' ? 'hidden' : '' }}">
@@ -36,6 +37,7 @@
                             <option value="{{ $cust->id }}" {{ old('customer_id') == $cust->id ? 'selected' : '' }}>{{ $cust->name }} ({{ $cust->customer_code }})</option>
                         @endforeach
                     </select>
+                    @error('customer_id') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Kendaraan</label>
@@ -49,15 +51,18 @@
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Tanggal Servis</label>
-                    <input type="date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>
+                    <input type="date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    @error('order_date') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Kilometer Saat Ini</label>
-                    <input type="number" name="current_km" value="{{ old('current_km', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>
+                    <input type="number" name="current_km" value="{{ old('current_km', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    @error('current_km') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm text-gray-400 mb-1">Keluhan Pelanggan</label>
-                    <textarea name="complaint" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>{{ old('complaint') }}</textarea>
+                    <textarea name="complaint" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">{{ old('complaint') }}</textarea>
+                    @error('complaint') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>
@@ -68,18 +73,22 @@
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Nama Pelanggan</label>
                     <input type="text" name="walkin_customer_name" value="{{ old('walkin_customer_name') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Nama pelanggan">
+                    @error('walkin_customer_name') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Nomor Telepon</label>
                     <input type="text" name="walkin_customer_phone" value="{{ old('walkin_customer_phone') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Nomor HP">
+                    @error('walkin_customer_phone') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Email (Opsional)</label>
                     <input type="email" name="walkin_customer_email" value="{{ old('walkin_customer_email') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Email">
+                    @error('walkin_customer_email') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Alamat (Opsional)</label>
                     <input type="text" name="walkin_customer_address" value="{{ old('walkin_customer_address') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Alamat">
+                    @error('walkin_customer_address') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div class="md:col-span-2 border-t border-gray-700 pt-4 mt-2">
                     <h3 class="text-sm font-semibold text-gray-300 mb-3">Informasi Kendaraan</h3>
@@ -87,34 +96,42 @@
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Plat Nomor</label>
                     <input type="text" name="walkin_vehicle_license_plate" value="{{ old('walkin_vehicle_license_plate') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Contoh: B 1234 ABC">
+                    @error('walkin_vehicle_license_plate') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Merek</label>
                     <input type="text" name="walkin_vehicle_brand" value="{{ old('walkin_vehicle_brand') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Contoh: Yamaha">
+                    @error('walkin_vehicle_brand') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Tipe</label>
                     <input type="text" name="walkin_vehicle_type" value="{{ old('walkin_vehicle_type') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Contoh: NMAX">
+                    @error('walkin_vehicle_type') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Tahun</label>
                     <input type="number" name="walkin_vehicle_year" value="{{ old('walkin_vehicle_year', date('Y')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="2024">
+                    @error('walkin_vehicle_year') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Warna</label>
                     <input type="text" name="walkin_vehicle_color" value="{{ old('walkin_vehicle_color') }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" placeholder="Warna kendaraan">
+                    @error('walkin_vehicle_color') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Tanggal Servis</label>
-                    <input type="date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>
+                    <input type="date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    @error('order_date') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Kilometer Saat Ini</label>
-                    <input type="number" name="current_km" value="{{ old('current_km', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>
+                    <input type="number" name="current_km" value="{{ old('current_km', 0) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">
+                    @error('current_km') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm text-gray-400 mb-1">Keluhan Pelanggan</label>
-                    <textarea name="complaint" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100" required>{{ old('complaint') }}</textarea>
+                    <textarea name="complaint" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">{{ old('complaint') }}</textarea>
+                    @error('complaint') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>
@@ -146,10 +163,12 @@
                             <option value="{{ $mekanik->id }}" {{ old('mechanic_id') == $mekanik->id ? 'selected' : '' }}>{{ $mekanik->name }}</option>
                         @endforeach
                     </select>
+                    @error('mechanic_id') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Catatan Internal (Opsional)</label>
                     <textarea name="notes" rows="2" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-100">{{ old('notes') }}</textarea>
+                    @error('notes') <span class="text-red-400 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>

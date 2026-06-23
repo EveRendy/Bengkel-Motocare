@@ -50,7 +50,13 @@
                     @forelse ($jobs as $job)
                     <tr class="hover:bg-gray-700/30 transition">
                         <td class="px-4 py-3 font-medium text-orange-400">{{ $job->serviceOrder->order_number }}</td>
-                        <td class="px-4 py-3">{{ $job->serviceOrder->vehicle->license_plate }} ({{ $job->serviceOrder->vehicle->brand }})</td>
+                        <td class="px-4 py-3">
+                            @if($job->serviceOrder->vehicle_id)
+                                {{ $job->serviceOrder->vehicle->license_plate }} ({{ $job->serviceOrder->vehicle->brand }})
+                            @else
+                                {{ $job->serviceOrder->walkin_vehicle_license_plate ?? '-' }} ({{ $job->serviceOrder->walkin_vehicle_brand }})
+                            @endif
+                        </td>
                         @if(!auth()->user()->hasRole('mekanik'))
                         <td class="px-4 py-3">{{ $job->mechanic->name }}</td>
                         @endif

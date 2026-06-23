@@ -43,8 +43,13 @@
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h2 class="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Informasi Kendaraan</h2>
                 <div class="space-y-3 text-sm">
-                    <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-xl">{{ $job->serviceOrder->vehicle->license_plate }}</span></div>
-                    <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $job->serviceOrder->vehicle->brand }} {{ $job->serviceOrder->vehicle->type }} ({{ $job->serviceOrder->vehicle->year }})</span></div>
+                    @if($job->serviceOrder->vehicle_id)
+                        <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-xl">{{ $job->serviceOrder->vehicle->license_plate }}</span></div>
+                        <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $job->serviceOrder->vehicle->brand }} {{ $job->serviceOrder->vehicle->type }} ({{ $job->serviceOrder->vehicle->year }})</span></div>
+                    @else
+                        <div><span class="block text-gray-500">Plat Nomor</span><span class="text-gray-200 font-bold text-xl">{{ $job->serviceOrder->walkin_vehicle_license_plate ?? '-' }}</span></div>
+                        <div><span class="block text-gray-500">Merk & Tipe</span><span class="text-gray-200">{{ $job->serviceOrder->walkin_vehicle_brand }} {{ $job->serviceOrder->walkin_vehicle_type }} ({{ $job->serviceOrder->walkin_vehicle_year }})</span></div>
+                    @endif
                     <div><span class="block text-gray-500">Kilometer Masuk</span><span class="text-gray-200">{{ number_format($job->serviceOrder->current_km, 0, ',', '.') }} KM</span></div>
                     <div class="pt-3 border-t border-gray-700">
                         <span class="block text-gray-500 mb-1">Keluhan Pelanggan:</span>
