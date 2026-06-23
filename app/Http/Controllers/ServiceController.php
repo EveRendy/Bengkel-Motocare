@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ServiceController extends Controller
@@ -24,14 +25,9 @@ class ServiceController extends Controller
         return view('services.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreServiceRequest $request)
     {
-        Gate::authorize('manage-services');
-        $data = $request->validate([
-            'category_id' => 'required|exists:service_categories,id',
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0'
-        ]);
+        $data = $request->validated();
 
         $nextId = (Service::max('id') ?? 0) + 1;
         $data['service_code'] = 'SRV-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
@@ -49,15 +45,9 @@ class ServiceController extends Controller
         return view('services.edit', compact('service'));
     }
 
-    public function update(Request $request, Service $service)
+    public function update(UpdateServiceRequest $request, Service $service)
     {
-        Gate::authorize('manage-services');
-        $data = $request->validate([
-            'category_id' => 'required|exists:service_categories,id',
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'status' => 'required|in:aktif,nonaktif'
-        ]);
+        $data = $request->validated();
 
         if ($service->price != $data['price']) {
             AuditLogService::log('Ubah harga layanan', 'services', $service->id);

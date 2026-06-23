@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\MechanicJob;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Models\ServiceOrder;
 use App\Models\Sparepart;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -18,6 +20,9 @@ class DashboardController extends Controller
         $recentOrders = collect();
         $quickActions = [];
         $activityTitle = 'Aktivitas Order Terbaru';
+        $topServices = collect();
+        $topSpareparts = collect();
+        $mechanicOrderStats = collect();
 
         if ($user->hasRole('pelanggan')) {
             $customer = $user->customer;
@@ -112,6 +117,41 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.index', compact('cards', 'recentOrders', 'quickActions', 'activityTitle'));
+        if ($user->hasRole('admin') || $user->hasRole('manager') || $user->hasRole('service_advisor')) {
+            $topServices = Service::query()
+                ->select('services.id', 'services.name', 'services.service_code')
+                ->selectRaw('COUNT(service_order_services.service_order_id) as total_orders')
+                ->join('service_order_services', 'services.id', '=', 'service_order_services.service_id')
+                ->groupBy('services.id', 'services.name', 'services.service_code')
+                ->orderByDesc('total_orders')
+                ->limit(5)
+                ->get();
+
+            $topSpareparts = Sparepart::query()
+                ->select('spareparts.id', 'spareparts.name', 'spareparts.part_code')
+                ->selectRaw('COALESCE(SUM(service_order_spareparts.quantity), 0) as total_quantity')
+                ->join('service_order_spareparts', 'spareparts.id', '=', 'service_order_spareparts.sparepart_id')
+                ->groupBy('spareparts.id', 'spareparts.name', 'spareparts.part_code')
+                ->orderByDesc('total_quantity')
+                ->limit(5)
+                ->get();
+
+            $mechanicOrderStats = User::query()
+                ->whereHas('roles', fn ($query) => $query->where('name', 'mekanik'))
+                ->withCount(['serviceOrdersAsMechanic as total_orders'])
+                ->orderByDesc('total_orders')
+                ->limit(5)
+                ->get();
+        }
+
+        return view('dashboard.index', compact(
+            'cards',
+            'recentOrders',
+            'quickActions',
+            'activityTitle',
+            'topServices',
+            'topSpareparts',
+            'mechanicOrderStats'
+        ));
     }
 }

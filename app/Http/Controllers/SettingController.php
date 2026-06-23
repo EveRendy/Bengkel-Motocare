@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateSettingsRequest;
 use App\Models\Setting;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class SettingController extends Controller
@@ -18,19 +18,9 @@ class SettingController extends Controller
         return view('settings.edit', compact('settings'));
     }
 
-    public function update(Request $request)
+    public function update(UpdateSettingsRequest $request)
     {
-        Gate::authorize('manage-settings');
-
-        $data = $request->validate([
-            'workshop_name' => ['required', 'string', 'max:100'],
-            'workshop_tagline' => ['nullable', 'string', 'max:150'],
-            'workshop_address' => ['nullable', 'string', 'max:255'],
-            'workshop_phone' => ['nullable', 'string', 'max:30'],
-            'workshop_email' => ['nullable', 'email', 'max:100'],
-            'workshop_operational_hours' => ['nullable', 'string', 'max:120'],
-            'workshop_logo_text' => ['nullable', 'string', 'max:10'],
-        ]);
+        $data = $request->validated();
 
         foreach ($data as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);

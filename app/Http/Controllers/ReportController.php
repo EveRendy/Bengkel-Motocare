@@ -70,6 +70,36 @@ class ReportController extends Controller
 
         $orders = $orders->get();
 
+        $customers = Customer::withCount(['vehicles', 'serviceOrders'])
+            ->latest();
+
+        if ($limit) {
+            $customers->limit($limit);
+        }
+
+        $customers = $customers->get();
+
+        $vehicles = Vehicle::with('customer')
+            ->latest();
+
+        if ($limit) {
+            $vehicles->limit($limit);
+        }
+
+        $vehicles = $vehicles->get();
+
+        $vehicleServiceHistories = ServiceOrder::with(['customer', 'vehicle', 'mechanic', 'mechanicJob'])
+            ->whereDate('created_at', '>=', $dateFrom)
+            ->whereDate('created_at', '<=', $dateTo)
+            ->whereNotNull('vehicle_id')
+            ->latest();
+
+        if ($limit) {
+            $vehicleServiceHistories->limit($limit);
+        }
+
+        $vehicleServiceHistories = $vehicleServiceHistories->get();
+
         $payments = Payment::with(['serviceOrder.customer', 'cashier'])
             ->whereDate('payment_date', '>=', $dateFrom)
             ->whereDate('payment_date', '<=', $dateTo)
@@ -155,6 +185,9 @@ class ReportController extends Controller
             'dateTo',
             'summary',
             'orders',
+            'customers',
+            'vehicles',
+            'vehicleServiceHistories',
             'payments',
             'mechanicJobs',
             'usedSpareparts',

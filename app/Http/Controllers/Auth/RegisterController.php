@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\Customer;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
@@ -19,22 +18,16 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string'],
-        ]);
+        $data = $request->validated();
 
         try {
             // Buat User
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
                 'status' => 'aktif',
             ]);
 
@@ -51,10 +44,10 @@ class RegisterController extends Controller
             Customer::create([
                 'user_id' => $user->id,
                 'customer_code' => $customerCode,
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+                'address' => $data['address'],
                 'registration_date' => now()->toDateString(),
                 'status' => 'aktif',
             ]);
@@ -65,6 +58,7 @@ class RegisterController extends Controller
 
             return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang di MotoCare.');
         } catch (\Exception $e) {
+            report($e);
             return back()->withInput()->withErrors(['error' => 'Terjadi kesalahan saat registrasi. Silakan coba lagi.']);
         }
     }

@@ -40,7 +40,7 @@
                     <tr class="hover:bg-gray-700/30 transition">
                         <td class="px-4 py-3">
                             @if($veh->fileUploads->count() > 0)
-                                <img src="{{ asset('storage/' . $veh->fileUploads->first()->file_path) }}" alt="Foto Motor" class="w-12 h-12 object-cover rounded shadow">
+                                <img src="{{ asset('storage/' . $veh->fileUploads->first()->path) }}" alt="Foto Motor" class="w-12 h-12 object-cover rounded shadow">
                             @else
                                 <div class="w-12 h-12 bg-gray-700 rounded flex items-center justify-center text-xs text-gray-500 shadow">No Pic</div>
                             @endif

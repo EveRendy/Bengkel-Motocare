@@ -93,6 +93,64 @@
         </div>
     </div>
 
+    @if($topServices->isNotEmpty() || $topSpareparts->isNotEmpty() || $mechanicOrderStats->isNotEmpty())
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Layanan Terpopuler</h2>
+            </div>
+            <div class="divide-y divide-gray-700/40">
+                @forelse($topServices as $service)
+                <div class="px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-gray-100 font-medium">{{ $service->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $service->service_code }}</p>
+                    </div>
+                    <span class="text-orange-400 font-bold">{{ $service->total_orders }}</span>
+                </div>
+                @empty
+                <div class="px-5 py-8 text-center text-gray-500">Belum ada layanan terpakai.</div>
+                @endforelse
+            </div>
+        </section>
+
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Sparepart Terpakai</h2>
+            </div>
+            <div class="divide-y divide-gray-700/40">
+                @forelse($topSpareparts as $sparepart)
+                <div class="px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-gray-100 font-medium">{{ $sparepart->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $sparepart->part_code }}</p>
+                    </div>
+                    <span class="text-orange-400 font-bold">{{ $sparepart->total_quantity }}</span>
+                </div>
+                @empty
+                <div class="px-5 py-8 text-center text-gray-500">Belum ada sparepart terpakai.</div>
+                @endforelse
+            </div>
+        </section>
+
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Order per Mekanik</h2>
+            </div>
+            <div class="divide-y divide-gray-700/40">
+                @forelse($mechanicOrderStats as $mechanic)
+                <div class="px-5 py-4 flex items-center justify-between gap-4">
+                    <p class="text-gray-100 font-medium">{{ $mechanic->name }}</p>
+                    <span class="text-orange-400 font-bold">{{ $mechanic->total_orders }}</span>
+                </div>
+                @empty
+                <div class="px-5 py-8 text-center text-gray-500">Belum ada order mekanik.</div>
+                @endforelse
+            </div>
+        </section>
+    </div>
+    @endif
+
     <div class="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-3">Informasi Cepat</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

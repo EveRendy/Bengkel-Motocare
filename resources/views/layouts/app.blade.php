@@ -118,9 +118,15 @@
                 </div>
                 @endif
 
-                @if(auth()->user()->can('view-reports') || auth()->user()->can('view-audit-logs') || auth()->user()->can('manage-settings'))
+                @if(auth()->user()->can('view-reports') || auth()->user()->can('view-audit-logs') || auth()->user()->can('manage-settings') || auth()->user()->can('manage-users'))
                 <div class="space-y-1">
                     <p class="px-3 text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Manajemen</p>
+                    @can('manage-users')
+                    <a href="{{ route('users.index') }}" class="{{ $navLink }} {{ request()->routeIs('users.*') ? $navActive : $navIdle }}">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                        User Internal
+                    </a>
+                    @endcan
                     @can('view-reports')
                     <a href="{{ route('reports.index') }}" class="{{ $navLink }} {{ request()->routeIs('reports.*') ? $navActive : $navIdle }}">
                         <span class="w-2 h-2 rounded-full bg-green-400"></span>

@@ -31,6 +31,39 @@ class OperationalReportExport implements WithMultipleSheets
                 ['B' => '#,##0']
             ),
             new ReportSheet(
+                'Pelanggan',
+                'Laporan Data Pelanggan',
+                $this->period(),
+                ['Kode', 'Nama', 'Email', 'No HP', 'Status', 'Jumlah Kendaraan', 'Jumlah Order'],
+                $this->data['customers']->map(fn ($customer) => [
+                    $customer->customer_code,
+                    $customer->name,
+                    $customer->email ?? '-',
+                    $customer->phone,
+                    ucfirst($customer->status),
+                    (int) $customer->vehicles_count,
+                    (int) $customer->service_orders_count,
+                ])->all(),
+                ['F' => '#,##0', 'G' => '#,##0']
+            ),
+            new ReportSheet(
+                'Kendaraan',
+                'Laporan Data Kendaraan',
+                $this->period(),
+                ['Plat Nomor', 'Pemilik', 'Merek', 'Tipe', 'Tahun', 'Warna', 'KM Terakhir', 'Status'],
+                $this->data['vehicles']->map(fn ($vehicle) => [
+                    $vehicle->license_plate,
+                    $vehicle->customer->name ?? '-',
+                    $vehicle->brand,
+                    $vehicle->type,
+                    $vehicle->year,
+                    $vehicle->color,
+                    (int) $vehicle->last_km,
+                    ucfirst($vehicle->status),
+                ])->all(),
+                ['G' => '#,##0']
+            ),
+            new ReportSheet(
                 'Order Servis',
                 'Laporan Order Servis',
                 $this->period(),
@@ -40,6 +73,21 @@ class OperationalReportExport implements WithMultipleSheets
                     $order->customer->name ?? '-',
                     $order->vehicle->license_plate ?? '-',
                     $order->mechanic->name ?? '-',
+                    ucfirst(str_replace('_', ' ', $order->status)),
+                    optional($order->created_at)->format('d/m/Y H:i'),
+                ])->all()
+            ),
+            new ReportSheet(
+                'Riwayat Servis',
+                'Laporan Riwayat Servis Kendaraan',
+                $this->period(),
+                ['Plat Nomor', 'No Order', 'Pelanggan', 'Mekanik', 'Keluhan', 'Status', 'Tanggal'],
+                $this->data['vehicleServiceHistories']->map(fn ($order) => [
+                    $order->vehicle->license_plate ?? '-',
+                    $order->order_number,
+                    $order->customer->name ?? '-',
+                    $order->mechanic->name ?? '-',
+                    $order->complaint,
                     ucfirst(str_replace('_', ' ', $order->status)),
                     optional($order->created_at)->format('d/m/Y H:i'),
                 ])->all()
