@@ -163,6 +163,70 @@
     </div>
 
     <div class="section">
+        <h2>Laporan Data Pelanggan</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>No HP</th>
+                    <th>Status</th>
+                    <th>Kendaraan</th>
+                    <th>Order</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($customers as $customer)
+                <tr>
+                    <td class="nowrap">{{ $customer->customer_code }}</td>
+                    <td>{{ $customer->name }}</td>
+                    <td>{{ $customer->email ?? '-' }}</td>
+                    <td>{{ $customer->phone }}</td>
+                    <td>{{ ucfirst($customer->status) }}</td>
+                    <td class="text-right">{{ $customer->vehicles_count }}</td>
+                    <td class="text-right">{{ $customer->service_orders_count }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="7">Belum ada data pelanggan.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Laporan Data Kendaraan</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Plat</th>
+                    <th>Pemilik</th>
+                    <th>Merek</th>
+                    <th>Tipe</th>
+                    <th>Tahun</th>
+                    <th>KM</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($vehicles as $vehicle)
+                <tr>
+                    <td class="nowrap">{{ $vehicle->license_plate }}</td>
+                    <td>{{ $vehicle->customer->name ?? '-' }}</td>
+                    <td>{{ $vehicle->brand }}</td>
+                    <td>{{ $vehicle->type }}</td>
+                    <td>{{ $vehicle->year }}</td>
+                    <td class="text-right">{{ number_format($vehicle->last_km, 0, ',', '.') }}</td>
+                    <td>{{ ucfirst($vehicle->status) }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="7">Belum ada data kendaraan.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
         <h2>Laporan Order Servis</h2>
         <table>
             <thead>
@@ -187,6 +251,36 @@
                 </tr>
                 @empty
                 <tr><td colspan="6">Belum ada order pada periode ini.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Laporan Riwayat Servis Kendaraan</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Plat</th>
+                    <th>No Order</th>
+                    <th>Pelanggan</th>
+                    <th>Mekanik</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($vehicleServiceHistories as $history)
+                <tr>
+                    <td class="nowrap">{{ $history->vehicle->license_plate ?? '-' }}</td>
+                    <td class="nowrap">{{ $history->order_number }}</td>
+                    <td>{{ $history->customer->name ?? '-' }}</td>
+                    <td>{{ $history->mechanic->name ?? '-' }}</td>
+                    <td>{{ ucfirst(str_replace('_', ' ', $history->status)) }}</td>
+                    <td class="nowrap">{{ optional($history->created_at)->format('d/m/Y H:i') }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="6">Belum ada riwayat servis kendaraan pada periode ini.</td></tr>
                 @endforelse
             </tbody>
         </table>

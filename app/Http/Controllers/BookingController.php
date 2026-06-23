@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CancelOrderRequest;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\ServiceOrder;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class BookingController extends Controller
@@ -55,28 +55,26 @@ class BookingController extends Controller
 
             return redirect()->route('booking.index')->with('success', 'Booking berhasil! Silakan bawa kendaraan Anda pada tanggal yang ditentukan.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal membuat booking: ' . $e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', 'Gagal membuat booking. Silakan coba lagi atau hubungi petugas bengkel.');
         }
     }
 
-    public function cancel(Request $request, ServiceOrder $order)
+    public function cancel(CancelOrderRequest $request, ServiceOrder $order)
     {
         Gate::authorize('cancel-order', $order);
-
-        $request->validate([
-            'cancel_reason' => 'required|string|min:5'
-        ]);
 
         try {
             $order->update([
                 'status' => 'batal',
-                'notes' => $order->notes . "\n\nAlasan Batal: " . $request->cancel_reason
+                'notes' => $order->notes . "\n\nAlasan Batal: " . $request->validated('cancel_reason')
             ]);
 
             AuditLogService::log('Pembatalan order via pelanggan', 'service_orders', $order->id);
 
             return redirect()->back()->with('success', 'Booking servis berhasil dibatalkan.');
         } catch (\Exception $e) {
+            report($e);
             return back()->with('error', 'Gagal membatalkan booking.');
         }
     }

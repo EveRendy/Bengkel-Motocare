@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSparepartRequest;
+use App\Http\Requests\UpdateSparepartRequest;
+use App\Http\Requests\UpdateSparepartStatusRequest;
 use App\Models\Sparepart;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class SparepartController extends Controller
@@ -22,13 +24,9 @@ class SparepartController extends Controller
         return view('spareparts.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreSparepartRequest $request)
     {
-        Gate::authorize('manage-spareparts');
-        $data = $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0'
-        ]);
+        $data = $request->validated();
 
         $nextId = (Sparepart::max('id') ?? 0) + 1;
         $data['part_code'] = 'SPR-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
@@ -46,14 +44,9 @@ class SparepartController extends Controller
         return view('spareparts.edit', compact('sparepart'));
     }
 
-    public function update(Request $request, Sparepart $sparepart)
+    public function update(UpdateSparepartRequest $request, Sparepart $sparepart)
     {
-        Gate::authorize('manage-spareparts');
-        $data = $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'stock_status' => 'required|in:tersedia,habis,nonaktif'
-        ]);
+        $data = $request->validated();
 
         if ($sparepart->price != $data['price']) {
             AuditLogService::log('Ubah harga sparepart', 'spareparts', $sparepart->id);
@@ -63,10 +56,9 @@ class SparepartController extends Controller
         return redirect()->route('spareparts.index')->with('success', 'Sparepart berhasil diubah.');
     }
 
-    public function updateStatus(Request $request, Sparepart $sparepart)
+    public function updateStatus(UpdateSparepartStatusRequest $request, Sparepart $sparepart)
     {
-        Gate::authorize('manage-spareparts');
-        $data = $request->validate(['stock_status' => 'required|in:tersedia,habis,nonaktif']);
+        $data = $request->validated();
         $sparepart->update($data);
         AuditLogService::log('Ubah status sparepart', 'spareparts', $sparepart->id);
         
@@ -83,7 +75,8 @@ class SparepartController extends Controller
 
             return redirect()->route('spareparts.index')->with('success', 'Sparepart berhasil dihapus.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus sparepart: ' . $e->getMessage());
+            report($e);
+            return back()->with('error', 'Gagal menghapus sparepart. Silakan coba lagi.');
         }
     }
 }

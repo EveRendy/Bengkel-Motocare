@@ -60,7 +60,7 @@
                 <label class="block text-sm font-medium text-gray-400 mb-1">Upload Foto Baru (Max 2MB)</label>
                 @if($vehicle->fileUploads->count() > 0)
                     <div class="mb-2">
-                        <img src="{{ asset('storage/' . $vehicle->fileUploads->first()->file_path) }}" alt="Current Photo" class="w-24 h-24 object-cover rounded shadow border border-gray-600">
+                        <img src="{{ asset('storage/' . $vehicle->fileUploads->first()->path) }}" alt="Current Photo" class="w-24 h-24 object-cover rounded shadow border border-gray-600">
                         <p class="text-xs text-gray-500 mt-1">Upload file baru untuk mengganti foto ini.</p>
                     </div>
                 @endif

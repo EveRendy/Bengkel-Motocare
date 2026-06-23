@@ -160,19 +160,15 @@ class VehicleController extends Controller
             $vehicle = Vehicle::create($data);
 
             if ($photo) {
-                $path = $photo->store('vehicles', 'public');
-                $vehicle->fileUploads()->create([
-                    'file_path' => $path,
-                    'file_type' => 'image',
-                    'original_name' => $photo->getClientOriginalName()
-                ]);
+                $this->handlePhotoUpload($photo, $vehicle);
             }
 
             AuditLogService::log('Tambah kendaraan sendiri', 'vehicles', $vehicle->id);
 
             return redirect()->route('my-vehicles.index')->with('success', 'Kendaraan berhasil ditambahkan. Data akan diverifikasi saat servis pertama.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal menambah kendaraan: ' . $e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', 'Gagal menambah kendaraan. Silakan coba lagi.');
         }
     }
 
@@ -209,20 +205,7 @@ class VehicleController extends Controller
             $vehicle->update($data);
 
             if ($photo) {
-                // Hapus foto lama jika ada
-                if ($vehicle->fileUploads->count() > 0) {
-                    foreach ($vehicle->fileUploads as $file) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->delete($file->file_path);
-                        $file->delete();
-                    }
-                }
-
-                $path = $photo->store('vehicles', 'public');
-                $vehicle->fileUploads()->create([
-                    'file_path' => $path,
-                    'file_type' => 'image',
-                    'original_name' => $photo->getClientOriginalName()
-                ]);
+                $this->handlePhotoUpload($photo, $vehicle);
             }
 
             AuditLogService::log('Ubah kendaraan sendiri', 'vehicles', $vehicle->id);

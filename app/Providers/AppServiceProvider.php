@@ -39,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         // Services & Spareparts
         Gate::define('manage-services', fn($user) => $user->hasRole('admin'));
         Gate::define('manage-spareparts', fn($user) => $user->hasRole('admin'));
+        Gate::define('manage-users', fn($user) => $user->hasRole('admin'));
 
         // Mechanics & Cashiers
         Gate::define('handle-mechanic-job', fn($user, $job) => $user->hasRole('mekanik') && $job->mechanic_id === $user->id);

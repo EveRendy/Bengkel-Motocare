@@ -75,6 +75,70 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
             <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Laporan Data Pelanggan</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+                    <thead class="bg-gray-700/30 text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-5 py-3">Kode</th>
+                            <th class="px-5 py-3">Nama</th>
+                            <th class="px-5 py-3">No HP</th>
+                            <th class="px-5 py-3">Kendaraan</th>
+                            <th class="px-5 py-3">Order</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/30">
+                        @forelse($customers as $customer)
+                        <tr>
+                            <td class="px-5 py-4 text-orange-400 font-medium">{{ $customer->customer_code }}</td>
+                            <td class="px-5 py-4">{{ $customer->name }}</td>
+                            <td class="px-5 py-4">{{ $customer->phone }}</td>
+                            <td class="px-5 py-4">{{ $customer->vehicles_count }}</td>
+                            <td class="px-5 py-4">{{ $customer->service_orders_count }}</td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">Belum ada data pelanggan.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Laporan Data Kendaraan</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+                    <thead class="bg-gray-700/30 text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-5 py-3">Plat</th>
+                            <th class="px-5 py-3">Pemilik</th>
+                            <th class="px-5 py-3">Motor</th>
+                            <th class="px-5 py-3">KM</th>
+                            <th class="px-5 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/30">
+                        @forelse($vehicles as $vehicle)
+                        <tr>
+                            <td class="px-5 py-4 text-orange-400 font-medium">{{ $vehicle->license_plate }}</td>
+                            <td class="px-5 py-4">{{ $vehicle->customer->name ?? '-' }}</td>
+                            <td class="px-5 py-4">{{ $vehicle->brand }} {{ $vehicle->type }} ({{ $vehicle->year }})</td>
+                            <td class="px-5 py-4">{{ number_format($vehicle->last_km, 0, ',', '.') }}</td>
+                            <td class="px-5 py-4">{{ ucfirst($vehicle->status) }}</td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">Belum ada data kendaraan.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
                 <h2 class="text-lg font-semibold text-gray-200">Laporan Order Servis</h2>
             </div>
             <div class="overflow-x-auto">
@@ -127,6 +191,38 @@
                         </tr>
                         @empty
                         <tr><td colspan="4" class="px-5 py-8 text-center text-gray-500">Belum ada pembayaran pada periode ini.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-gray-200">Riwayat Servis Kendaraan</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300 whitespace-nowrap">
+                    <thead class="bg-gray-700/30 text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-5 py-3">Plat</th>
+                            <th class="px-5 py-3">Order</th>
+                            <th class="px-5 py-3">Pelanggan</th>
+                            <th class="px-5 py-3">Mekanik</th>
+                            <th class="px-5 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700/30">
+                        @forelse($vehicleServiceHistories as $history)
+                        <tr>
+                            <td class="px-5 py-4 text-orange-400 font-medium">{{ $history->vehicle->license_plate ?? '-' }}</td>
+                            <td class="px-5 py-4">{{ $history->order_number }}</td>
+                            <td class="px-5 py-4">{{ $history->customer->name ?? '-' }}</td>
+                            <td class="px-5 py-4">{{ $history->mechanic->name ?? '-' }}</td>
+                            <td class="px-5 py-4"><x-ui.status-badge :status="$history->status" /></td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">Belum ada riwayat servis pada periode ini.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CancelPaymentRequest;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -141,31 +142,27 @@ class PaymentController extends Controller
             ->download($fileName);
     }
 
-    public function cancel(Request $request, Payment $payment)
+    public function cancel(CancelPaymentRequest $request, Payment $payment)
     {
-        Gate::authorize('cancel-payment');
-
-        $request->validate([
-            'cancel_reason' => ['required', 'string', 'min:10', 'max:500'],
-        ]);
+        $data = $request->validated();
 
         if ($payment->status !== 'lunas') {
             return back()->with('error', 'Hanya pembayaran lunas yang bisa dibatalkan.');
         }
 
-        DB::transaction(function () use ($request, $payment) {
+        DB::transaction(function () use ($data, $payment) {
             $payment->load('serviceOrder');
 
             $payment->update([
                 'status' => 'batal',
-                'cancel_reason' => $request->cancel_reason,
+                'cancel_reason' => $data['cancel_reason'],
             ]);
 
             $payment->serviceOrder->update([
                 'status' => 'selesai_servis',
             ]);
 
-            AuditLogService::log('Batalkan pembayaran: ' . $request->cancel_reason, 'payments', $payment->id);
+            AuditLogService::log('Batalkan pembayaran: ' . $data['cancel_reason'], 'payments', $payment->id);
         });
 
         return redirect()->route('payments.show', $payment->serviceOrder)->with('success', 'Pembayaran berhasil dibatalkan. Order dikembalikan ke status siap dibayar.');

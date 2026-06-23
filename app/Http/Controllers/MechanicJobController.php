@@ -70,7 +70,8 @@ class MechanicJobController extends Controller
 
             return redirect()->route('mechanic-jobs.show', $job)->with('success', 'Hasil pemeriksaan dan tindakan servis berhasil disimpan.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal menyimpan catatan: ' . $e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', 'Gagal menyimpan catatan. Silakan coba lagi.');
         }
     }
 
@@ -91,7 +92,8 @@ class MechanicJobController extends Controller
 
             return redirect()->route('mechanic-jobs.index')->with('success', 'Pengerjaan selesai. Status order dilanjutkan ke tahap pembayaran.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menyelesaikan pengerjaan: ' . $e->getMessage());
+            report($e);
+            return back()->with('error', 'Gagal menyelesaikan pengerjaan. Silakan coba lagi.');
         }
     }
 
@@ -158,7 +160,8 @@ class MechanicJobController extends Controller
 
             return redirect()->route('mechanic-jobs.show', $job)->with('success', 'Pengerjaan dimulai. Waktu mulai telah dicatat. Silakan lakukan pemeriksaan.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memulai pengerjaan: ' . $e->getMessage());
+            report($e);
+            return back()->with('error', 'Gagal memulai pengerjaan. Silakan coba lagi.');
         }
     }
 }

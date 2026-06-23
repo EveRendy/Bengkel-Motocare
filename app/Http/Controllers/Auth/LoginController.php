@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
@@ -14,12 +15,9 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
         try {
             if (Auth::attempt($credentials, $request->boolean('remember'))) {
@@ -45,6 +43,7 @@ class LoginController extends Controller
                 'email' => 'Email atau password salah.',
             ])->onlyInput('email');
         } catch (\Exception $e) {
+            report($e);
             return back()->withErrors([
                 'email' => 'Terjadi kesalahan. Silakan coba lagi.',
             ])->onlyInput('email');

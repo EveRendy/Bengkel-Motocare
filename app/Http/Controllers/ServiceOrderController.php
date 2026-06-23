@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignMechanicRequest;
+use App\Http\Requests\CancelOrderRequest;
 use App\Http\Requests\StoreServiceOrderRequest;
 use App\Http\Requests\UpdateServiceOrderRequest;
 use App\Models\Customer;
@@ -90,7 +92,8 @@ class ServiceOrderController extends Controller
 
             return redirect()->route('service-orders.index')->with('success', 'Order servis berhasil dibuat.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal membuat order: ' . $e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', 'Gagal membuat order servis. Silakan periksa data lalu coba lagi.');
         }
     }
 
@@ -160,20 +163,20 @@ class ServiceOrderController extends Controller
 
             return redirect()->route('service-orders.index')->with('success', 'Data order berhasil diperbarui.');
         } catch (\Exception $e) {
+            report($e);
             return back()->withInput()->with('error', 'Gagal memperbarui order.');
         }
     }
 
-    public function cancel(Request $request, ServiceOrder $order)
+    public function cancel(CancelOrderRequest $request, ServiceOrder $order)
     {
         Gate::authorize('cancel-order', $order);
-        
-        $request->validate(['cancel_reason' => 'required|string|min:5']);
+        $data = $request->validated();
 
         try {
             $order->update([
                 'status' => 'batal',
-                'notes' => $order->notes . "\n\nAlasan Batal (Oleh " . auth()->user()->name . "): " . $request->cancel_reason
+                'notes' => $order->notes . "\n\nAlasan Batal (Oleh " . auth()->user()->name . "): " . $data['cancel_reason']
             ]);
 
             // Delete associated MechanicJob if exists
@@ -185,21 +188,21 @@ class ServiceOrderController extends Controller
             AuditLogService::log('Pembatalan order servis', 'service_orders', $order->id);
             return back()->with('success', 'Order dibatalkan.');
         } catch (\Exception $e) {
+            report($e);
             return back()->with('error', 'Gagal membatalkan order.');
         }
     }
 
-    public function assignMechanic(Request $request, \App\Models\ServiceOrder $order)
+    public function assignMechanic(AssignMechanicRequest $request, \App\Models\ServiceOrder $order)
     {
-        Gate::authorize('assign-mechanic');
-        $request->validate(['mechanic_id' => 'required|exists:users,id']);
+        $data = $request->validated();
 
         if (!in_array($order->status, ['terdaftar', 'menunggu'])) {
             return back()->with('error', 'Hanya order berstatus Terdaftar atau Menunggu yang bisa di-assign mekanik.');
         }
 
         try {
-            $updateData = ['mechanic_id' => $request->mechanic_id];
+            $updateData = ['mechanic_id' => $data['mechanic_id']];
             if ($order->status == 'terdaftar') {
                 $updateData['status'] = 'menunggu';
             }
@@ -211,20 +214,21 @@ class ServiceOrderController extends Controller
             if (!$job) {
                 \App\Models\MechanicJob::create([
                     'service_order_id' => $order->id,
-                    'mechanic_id' => $request->mechanic_id,
+                    'mechanic_id' => $data['mechanic_id'],
                     'started_at' => null,
                     'finished_at' => null,
                 ]);
             } else {
                 // Jika ganti mekanik
-                $job->update(['mechanic_id' => $request->mechanic_id]);
+                $job->update(['mechanic_id' => $data['mechanic_id']]);
             }
 
             \App\Services\AuditLogService::log('Penugasan mekanik', 'service_orders', $order->id);
 
             return back()->with('success', 'Mekanik berhasil ditugaskan. Menunggu mekanik memulai pengerjaan.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menugaskan mekanik: ' . $e->getMessage());
+            report($e);
+            return back()->with('error', 'Gagal menugaskan mekanik. Silakan coba lagi.');
         }
     }
 
@@ -256,7 +260,8 @@ class ServiceOrderController extends Controller
             \App\Services\AuditLogService::log('Force start pengerjaan (Oleh SA)', 'service_orders', $order->id);
             return back()->with('success', 'Status diubah menjadi Dikerjakan (Emergency Force Start). Normalnya mekanik yang harus klik mulai.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memulai pengerjaan: ' . $e->getMessage());
+            report($e);
+            return back()->with('error', 'Gagal memulai pengerjaan. Silakan coba lagi.');
         }
     }
 
@@ -368,7 +373,8 @@ class ServiceOrderController extends Controller
 
             return redirect()->route('service-orders.show', $order)->with('success', 'Booking berhasil diproses menjadi Order Servis.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal memproses booking: ' . $e->getMessage());
+            report($e);
+            return back()->withInput()->with('error', 'Gagal memproses booking. Silakan periksa data lalu coba lagi.');
         }
     }
 }
