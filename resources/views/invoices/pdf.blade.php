@@ -156,14 +156,24 @@
     <div class="grid">
         <div class="col">
             <h3>Ditagihkan Kepada</h3>
-            <p>{{ $order->customer->name ?? '-' }}</p>
-            <p class="muted">{{ $order->customer->phone ?? '-' }}</p>
-            <p class="muted">{{ $order->customer->address ?? '-' }}</p>
+            @if($order->customer_id)
+                <p>{{ $order->customer->name ?? '-' }}</p>
+                <p class="muted">{{ $order->customer->phone ?? '-' }}</p>
+                <p class="muted">{{ $order->customer->address ?? '-' }}</p>
+            @else
+                <p>{{ $order->walkin_customer_name ?? '-' }}</p>
+                <p class="muted">{{ $order->walkin_customer_phone ?? '-' }}</p>
+                <p class="muted">{{ $order->walkin_customer_address ?? '-' }}</p>
+            @endif
         </div>
         <div class="col right">
             <h3>Detail Order</h3>
             <p>{{ $order->order_number }}</p>
-            <p class="muted">{{ $order->vehicle->license_plate ?? '-' }} - {{ $order->vehicle->brand ?? '-' }} {{ $order->vehicle->type ?? '' }}</p>
+            @if($order->vehicle_id)
+                <p class="muted">{{ $order->vehicle->license_plate ?? '-' }} - {{ $order->vehicle->brand ?? '-' }} {{ $order->vehicle->type ?? '' }}</p>
+            @else
+                <p class="muted">{{ $order->walkin_vehicle_license_plate ?? '-' }} - {{ $order->walkin_vehicle_brand ?? '-' }} {{ $order->walkin_vehicle_type ?? '' }}</p>
+            @endif
             <p class="muted">Kasir: {{ $payment->cashier->name ?? '-' }}</p>
         </div>
     </div>

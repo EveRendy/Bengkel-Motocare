@@ -44,15 +44,25 @@
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-700 print:border-gray-300">
             <div class="space-y-2 text-sm">
                 <h3 class="text-gray-100 font-semibold mb-3 print:text-gray-900">Ditagihkan Kepada</h3>
-                <p class="text-gray-300 print:text-gray-800">{{ $order->customer->name ?? '-' }}</p>
-                <p class="text-gray-400 print:text-gray-600">{{ $order->customer->phone ?? '-' }}</p>
-                <p class="text-gray-400 print:text-gray-600">{{ $order->customer->address ?? '-' }}</p>
+                @if($order->customer_id)
+                    <p class="text-gray-300 print:text-gray-800">{{ $order->customer->name ?? '-' }}</p>
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->customer->phone ?? '-' }}</p>
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->customer->address ?? '-' }}</p>
+                @else
+                    <p class="text-gray-300 print:text-gray-800">{{ $order->walkin_customer_name ?? '-' }}</p>
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->walkin_customer_phone ?? '-' }}</p>
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->walkin_customer_address ?? '-' }}</p>
+                @endif
             </div>
 
             <div class="space-y-2 text-sm md:text-right">
                 <h3 class="text-gray-100 font-semibold mb-3 print:text-gray-900">Detail Order</h3>
                 <p class="text-gray-300 print:text-gray-800">{{ $order->order_number }}</p>
-                <p class="text-gray-400 print:text-gray-600">{{ $order->vehicle->license_plate ?? '-' }} - {{ $order->vehicle->brand ?? '-' }} {{ $order->vehicle->type ?? '' }}</p>
+                @if($order->vehicle_id)
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->vehicle->license_plate ?? '-' }} - {{ $order->vehicle->brand ?? '-' }} {{ $order->vehicle->type ?? '' }}</p>
+                @else
+                    <p class="text-gray-400 print:text-gray-600">{{ $order->walkin_vehicle_license_plate ?? '-' }} - {{ $order->walkin_vehicle_brand ?? '-' }} {{ $order->walkin_vehicle_type ?? '' }}</p>
+                @endif
                 <p class="text-gray-400 print:text-gray-600">Kasir: {{ $payment->cashier->name ?? '-' }}</p>
             </div>
         </div>
